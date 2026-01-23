@@ -13,5 +13,9 @@
   "devDependencies": {
     "electron": "^40.0.0",
     "monaco-editor": "^0.55.1"
+  },
+  "dependencies": {
+    "input": "^1.0.1",
+    "telegram": "^2.26.22"
   }
 }

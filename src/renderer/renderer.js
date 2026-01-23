@@ -1,8 +1,8 @@
 const urlInput = document.getElementById('url-input');
 const newTabBtn = document.getElementById('new-tab-btn');
 const gridContainer = document.getElementById('grid-container');
-const syncInput = document.getElementById('sync-input');
-const alBtn = document.getElementById('al-btn');
+const syncInput = document.getElementById('input-id-yaz');
+const alBtn = document.getElementById('buton-id-yaz');
 
 let views = []; // { id, url, element }
 
@@ -86,6 +86,30 @@ syncInput.addEventListener('input', () => {
 alBtn.onclick = () => {
     window.electronAPI.globalClick();
 };
+
+// Telegram Integration
+window.electronAPI.onTelegramMessage((data) => {
+    console.log('Received Telegram message:', data);
+
+    // 1. Update the input field
+    syncInput.value = data;
+    // Trigger the input event so sync logic kicks in
+    syncInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    // 2. 60 second click loop
+    let clickCount = 0;
+    const clickInterval = setInterval(() => {
+        if (clickCount >= 60) {
+            clearInterval(clickInterval);
+            console.log('Finished 60 click loop');
+            return;
+        }
+
+        console.log(`Clicking button... (${clickCount + 1}/60)`);
+        alBtn.click();
+        clickCount++;
+    }, 1000);
+});
 
 // Create initial views if requested, or just wait for user
 window.onload = () => {

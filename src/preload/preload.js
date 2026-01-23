@@ -6,5 +6,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     syncValue: (value) => ipcRenderer.send('sync-value', value),
     closeTab: (id) => ipcRenderer.send('close-tab', id),
     globalClick: () => ipcRenderer.send('global-click'),
-    onTabCreated: (callback) => ipcRenderer.on('tab-created', (event, id) => callback(id))
+    onTabCreated: (callback) => ipcRenderer.on('tab-created', (event, id) => callback(id)),
+    onTelegramMessage: (callback) => ipcRenderer.on('telegram-message', (event, data) => callback(data))
 });
