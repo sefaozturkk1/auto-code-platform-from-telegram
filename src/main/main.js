@@ -1,8 +1,10 @@
-const { app, BrowserWindow, BrowserView, ipcMain } = require('electron');
+const { app, BrowserWindow, BrowserView, ipcMain, Menu, Tray } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
 let mainWindow;
+let tray;
+let isQuitting = false;
 const views = new Map(); // id -> BrowserView
 
 function createMainWindow() {
@@ -19,13 +21,58 @@ function createMainWindow() {
 
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
 
+    mainWindow.on('close', (event) => {
+        if (!isQuitting) {
+            event.preventDefault();
+            mainWindow.hide();
+        }
+        return false;
+    });
+
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
 
     mainWindow.on('resize', () => {
-        updateGridLayout();
+        // Handled by renderer now
     });
+}
+
+function createTray() {
+    // Note: You might want to add a real icon file in the future. 
+    // For now, it will look for a default or empty icon if not provided.
+    // Replace 'path/to/icon' with a valid png/ico file path.
+    tray = new Tray(path.join(__dirname, '../../assets/icon.png')); // Make sure this path exists or use a dummy
+    const contextMenu = Menu.buildFromTemplate([
+        { label: 'Show App', click: () => mainWindow.show() },
+        {
+            label: 'Exit', click: () => {
+                isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+    tray.setToolTip('Telegram UserBot Browser');
+    tray.setContextMenu(contextMenu);
+
+    tray.on('click', () => {
+        mainWindow.show();
+    });
+}
+
+function startAntiIdle() {
+    console.log("Anti-Idle mechanism started (5m interval)");
+    setInterval(() => {
+        if (views.size === 0) return;
+        console.log("Triggering anti-idle action in active views...");
+        views.forEach((view) => {
+            // Simulate a tiny scroll to prevent timeout
+            view.webContents.executeJavaScript(`
+                window.scrollBy(0, 1);
+                setTimeout(() => window.scrollBy(0, -1), 100);
+            `).catch(() => { });
+        });
+    }, 5 * 60 * 1000); // 5 minutes
 }
 
 function createBrowserTab(url) {
@@ -50,48 +97,26 @@ function createBrowserTab(url) {
 }
 
 function updateGridLayout() {
-    if (!mainWindow || views.size === 0) return;
-
-    const bounds = mainWindow.getContentBounds();
-    const TOP_OFFSET = 180; // Space for the header and sync bar
-    const containerWidth = bounds.width;
-    const containerHeight = bounds.height - TOP_OFFSET;
-
-    const count = views.size;
-    const cols = Math.ceil(Math.sqrt(count));
-    const rows = Math.ceil(count / cols);
-
-    const itemWidth = Math.floor(containerWidth / cols);
-    const itemHeight = Math.floor(containerHeight / rows);
-
-    let index = 0;
-    const sortedIds = Array.from(views.keys()).sort();
-
-    for (const id of sortedIds) {
-        const view = views.get(id);
-        const col = index % cols;
-        const row = Math.floor(index / cols);
-
-        view.setBounds({
-            x: col * itemWidth,
-            y: TOP_OFFSET + (row * itemHeight),
-            width: itemWidth,
-            height: itemHeight
-        });
-
-        // Ensure it's attached and visible
-        // Electron 23+ autoResizing might need specific handling but setBounds is primary
-        view.setAutoResize({ width: true, height: true });
-
-        index++;
-    }
+    // Legacy function - positions are now managed via update-view-bounds
 }
 
 app.whenReady().then(() => {
     createMainWindow();
+    try {
+        createTray();
+    } catch (e) {
+        console.log("Tray icon failed to load (check assets/icon.png path):", e.message);
+    }
+    startAntiIdle();
+
+    // Start Telegram Bot after app is ready
+    startTelegramBot().catch(err => console.error("Telegram Bot initialization failed:", err));
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+        else {
+            if (mainWindow) mainWindow.show();
+        }
     });
 });
 
@@ -111,6 +136,15 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
 ipcMain.on('new-tab', (event, url) => {
     const id = createBrowserTab(url);
     event.reply('tab-created', id);
+});
+
+ipcMain.on('update-view-bounds', (event, boundsList) => {
+    boundsList.forEach(({ id, bounds }) => {
+        const view = views.get(id);
+        if (view) {
+            view.setBounds(bounds);
+        }
+    });
 });
 
 ipcMain.on('sync-value', (event, value) => {
@@ -158,35 +192,57 @@ ipcMain.on('close-tab', (event, id) => {
 const { TelegramClient, Api } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const { NewMessage } = require('telegram/events');
-const input = require('input'); // For terminal input during login
 
 // --- USER CONFIGURATION ---
 const apiId = 10637839; // Replace with your API ID (Integer)
 const apiHash = 'c1a267916b74fe6ffe2d0d81b823acf2'; // Replace with your API Hash (String)
-const targetChat = 'BONUS UZMANI |FORUMBANKO'; // e.g., 'my_group' or -100123456789
+const targetChat = 'kod deneme'; // e.g., 'my_group' or -100123456789
 // ---------------------------
 
-const SESSION_FILE_PATH = path.join(app.getPath('userData'), 'telegram_session.txt');
+// --- Moved inside startTelegramBot for safety ---
+let SESSION_FILE_PATH;
+let stringSession;
+let client;
 
-let sessionString = "";
-if (fs.existsSync(SESSION_FILE_PATH)) {
-    sessionString = fs.readFileSync(SESSION_FILE_PATH, 'utf8').trim();
-    console.log("Existing session found and loaded.");
+// Helper for waiting for GUI input
+let authResolver = null;
+ipcMain.on('tg-auth-response', (event, value) => {
+    if (authResolver) {
+        authResolver(value);
+        authResolver = null;
+    }
+});
+
+async function getGUIInput(type) {
+    return new Promise((resolve) => {
+        authResolver = resolve;
+        if (mainWindow) {
+            mainWindow.webContents.send('tg-auth-request', type);
+        }
+    });
 }
 
-const stringSession = new StringSession(sessionString);
+async function startTelegramBot() {
+    SESSION_FILE_PATH = path.join(app.getPath('userData'), 'telegram_session.txt');
 
-(async () => {
+    let sessionString = "";
+    if (fs.existsSync(SESSION_FILE_PATH)) {
+        sessionString = fs.readFileSync(SESSION_FILE_PATH, 'utf8').trim();
+        console.log("Existing session found and loaded.");
+    }
+
+    stringSession = new StringSession(sessionString);
+
     try {
         console.log("Loading Telegram client...");
-        const client = new TelegramClient(stringSession, apiId, apiHash, {
+        client = new TelegramClient(stringSession, apiId, apiHash, {
             connectionRetries: 5,
         });
 
         await client.start({
-            phoneNumber: async () => await input.text("Please enter your number: "),
-            password: async () => await input.text("Please enter your password: "),
-            phoneCode: async () => await input.text("Please enter the code you received: "),
+            phoneNumber: async () => await getGUIInput('phoneNumber'),
+            password: async () => await getGUIInput('password'),
+            phoneCode: async () => await getGUIInput('phoneCode'),
             onError: (err) => console.log(err),
         });
 
@@ -208,26 +264,27 @@ const stringSession = new StringSession(sessionString);
 
                 const chatUsername = (chat.username || "").toLowerCase();
                 const chatTitle = (chat.title || "").toLowerCase();
-                const chatId = chat.id.toString();
+                const chatId = chat.id ? chat.id.toString() : "";
                 const target = targetChat.toLowerCase();
 
-                console.log(`Incoming message from: "${chat.title}" (@${chat.username || 'no-username'}) [ID: ${chatId}]`);
+                console.log(`[TG DEBUG] Incoming: "${chat.title}" (@${chat.username}) [ID: ${chatId}]`);
 
-                // Match by username, title, or ID
+                // Match by username, title, or ID (Relaxed matching)
                 let isTarget = false;
-                if (chatUsername === target.replace('@', '') ||
-                    chatTitle === target ||
+                if (chatUsername.includes(target.replace('@', '')) ||
+                    chatTitle.includes(target) ||
                     chatId === target) {
                     isTarget = true;
                 }
 
                 if (!isTarget) return;
 
-                console.log(`Target chat matched! checking keywords...`);
+                console.log(`[TG DEBUG] Target Matched! Checking keywords in: ${text}`);
 
-                // Filter by keywords MAT or JOJO
-                if (text.includes('MAT') || text.includes('JOJO')) {
-                    console.log(`Matched message in target chat: ${text}`);
+                // Filter by keywords MAT or JOJO (Case-Insensitive)
+                const upperText = text.toUpperCase();
+                if (upperText.includes('MAT') || upperText.includes('JOJO')) {
+                    console.log(`[TG DEBUG] Matched Keywords!`);
 
                     let extractedText = text;
 
@@ -253,8 +310,9 @@ const stringSession = new StringSession(sessionString);
 
     } catch (err) {
         console.error("Failed to start Telegram client:", err);
+        throw err;
     }
-})();
+}
 
 ipcMain.on('switch-tab', (event, id) => {
     // In grid mode, we don't switch, but we could highlight the selected one

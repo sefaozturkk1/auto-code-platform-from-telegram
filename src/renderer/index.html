@@ -112,40 +112,216 @@
             letter-spacing: 1px;
         }
 
+        /* Styled Scrollbar */
+        #grid-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        #grid-container::-webkit-scrollbar-track {
+            background: #1a1b1e;
+        }
+
+        #grid-container::-webkit-scrollbar-thumb {
+            background: #373a40;
+            border-radius: 10px;
+            border: 3px solid #1a1b1e;
+        }
+
+        #grid-container::-webkit-scrollbar-thumb:hover {
+            background: #4c6ef5;
+        }
+
         #grid-container {
             flex: 1;
             position: relative;
             background: #141517;
-            overflow: hidden;
-            display: flex;
-            flex-wrap: wrap;
+            overflow-y: scroll;
+            /* Force scrollbar visibility */
+            overflow-x: hidden;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+            grid-auto-rows: 450px;
+            gap: 20px;
+            padding: 20px;
+            align-content: start;
         }
 
         .grid-placeholder {
-            border: 1px solid #2c2e33;
+            border: 3px solid #2c2e33;
             box-sizing: border-box;
             display: flex;
+            flex-direction: column;
             background: #1a1b1e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .grid-placeholder.maximized {
+            position: fixed;
+            top: 150px;
+            /* Below sync-area */
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            z-index: 500;
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+        }
+
+        .grid-placeholder:hover {
+            border-color: #4c6ef5;
         }
 
         .grid-header {
-            height: 30px;
+            height: 36px;
             background: #25262b;
             display: flex;
             align-items: center;
-            padding: 0 10px;
-            font-size: 11px;
-            color: #909296;
+            padding: 0 12px;
+            font-size: 13px;
+            color: #e8eaed;
             width: 100%;
-            border-bottom: 1px solid #2c2e33;
+            border-bottom: 2px solid #2c2e33;
             justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .grid-maximize {
+            cursor: pointer;
+            color: #8ab4f8;
+            font-weight: bold;
+            font-size: 12px;
+            user-select: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #2c2e33;
+        }
+
+        .grid-maximize:hover {
+            background: #373a40;
         }
 
         .grid-close {
             cursor: pointer;
             color: #fa5252;
             font-weight: bold;
+            font-size: 18px;
+            user-select: none;
+            line-height: 1;
+        }
+
+        .grid-close:hover {
+            color: #ff6b6b;
+        }
+
+        /* Login Modal Styles */
+        #login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #25262b;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #373a40;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-content h2 {
+            margin: 0;
+            color: #8ab4f8;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .modal-content p {
+            margin: 0;
             font-size: 14px;
+            color: #a6a7ab;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #909296;
+            font-weight: 600;
+        }
+
+        .modal-input {
+            background: #1a1b1e;
+            border: 1px solid #373a40;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #8ab4f8;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: #4c6ef5;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #373a40;
+            color: #e8eaed;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -167,6 +343,34 @@
         </div>
         <div id="grid-container">
             <!-- Grid placeholders will be created here -->
+        </div>
+
+        <!-- Telegram Login Modal -->
+        <div id="login-modal">
+            <div class="modal-content">
+                <h2 id="modal-title">Telegram Login</h2>
+                <p id="modal-desc">Please enter your phone number to sign in.</p>
+
+                <div id="phone-stage" class="input-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="phone-input" class="modal-input" placeholder="+905xxxxxxxxx">
+                </div>
+
+                <div id="code-stage" class="input-group hidden">
+                    <label>Verification Code</label>
+                    <input type="text" id="code-input" class="modal-input" placeholder="Enter 5-digit code">
+                </div>
+
+                <div id="password-stage" class="input-group hidden">
+                    <label>2FA Password</label>
+                    <input type="password" id="password-input" class="modal-input" placeholder="Your cloud password">
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="modal-cancel" class="modal-btn secondary">Cancel</button>
+                    <button id="modal-submit" class="modal-btn primary">Continue</button>
+                </div>
+            </div>
         </div>
     </div>
     <script src="renderer.js"></script>
