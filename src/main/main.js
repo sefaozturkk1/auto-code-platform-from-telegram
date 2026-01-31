@@ -196,7 +196,6 @@ const { NewMessage } = require('telegram/events');
 // --- USER CONFIGURATION ---
 const apiId = 10637839; // Replace with your API ID (Integer)
 const apiHash = 'c1a267916b74fe6ffe2d0d81b823acf2'; // Replace with your API Hash (String)
-const targetChat = 'kod deneme'; // e.g., 'my_group' or -100123456789
 // ---------------------------
 
 // --- Moved inside startTelegramBot for safety ---
@@ -258,28 +257,12 @@ async function startTelegramBot() {
                 const text = message.message || "";
                 const entities = message.entities || [];
 
-                // --- Peer Identification ---
+                // --- Peer Identification (Logging Only) ---
                 const chat = await message.getChat();
-                if (!chat) return;
+                const chatId = chat ? (chat.id ? chat.id.toString() : "") : "unknown";
+                const chatTitle = chat ? (chat.title || "") : "unknown";
 
-                const chatUsername = (chat.username || "").toLowerCase();
-                const chatTitle = (chat.title || "").toLowerCase();
-                const chatId = chat.id ? chat.id.toString() : "";
-                const target = targetChat.toLowerCase();
-
-                console.log(`[TG DEBUG] Incoming: "${chat.title}" (@${chat.username}) [ID: ${chatId}]`);
-
-                // Match by username, title, or ID (Relaxed matching)
-                let isTarget = false;
-                if (chatUsername.includes(target.replace('@', '')) ||
-                    chatTitle.includes(target) ||
-                    chatId === target) {
-                    isTarget = true;
-                }
-
-                if (!isTarget) return;
-
-                console.log(`[TG DEBUG] Target Matched! Checking keywords in: ${text}`);
+                console.log(`[TG DEBUG] Incoming from: "${chatTitle}" [ID: ${chatId}]. Checking keywords in: ${text}`);
 
                 // Filter by keywords MAT or JOJO (Case-Insensitive)
                 const upperText = text.toUpperCase();
