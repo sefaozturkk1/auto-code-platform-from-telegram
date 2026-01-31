@@ -5,7 +5,7 @@ const fs = require('fs');
 let mainWindow;
 let tray;
 let isQuitting = false;
-const views = new Map(); // id -> BrowserView
+const views = new Map(); // id -> { view: BrowserView, category: string }
 
 function createMainWindow() {
     mainWindow = new BrowserWindow({
@@ -65,9 +65,9 @@ function startAntiIdle() {
     setInterval(() => {
         if (views.size === 0) return;
         console.log("Triggering anti-idle action in active views...");
-        views.forEach((view) => {
+        views.forEach((viewData) => {
             // Simulate a tiny scroll to prevent timeout
-            view.webContents.executeJavaScript(`
+            viewData.view.webContents.executeJavaScript(`
                 window.scrollBy(0, 1);
                 setTimeout(() => window.scrollBy(0, -1), 100);
             `).catch(() => { });
@@ -75,7 +75,7 @@ function startAntiIdle() {
     }, 5 * 60 * 1000); // 5 minutes
 }
 
-function createBrowserTab(url) {
+function createBrowserTab(url, category = 'blue') {
     const id = Date.now().toString();
     const partition = `persist:account_${id}`;
 
@@ -87,13 +87,16 @@ function createBrowserTab(url) {
         }
     });
 
-    views.set(id, view);
+    // Start off-screen until renderer calculates correct position
+    view.setBounds({ x: -9999, y: -9999, width: 0, height: 0 });
+
+    views.set(id, { view, category });
     mainWindow.addBrowserView(view);
     view.webContents.loadURL(url);
 
     updateGridLayout();
 
-    return id;
+    return { id, category };
 }
 
 function updateGridLayout() {
@@ -134,21 +137,27 @@ app.on('certificate-error', (event, webContents, url, error, certificate, callba
 
 // IPC Handlers
 ipcMain.on('new-tab', (event, url) => {
-    const id = createBrowserTab(url);
-    event.reply('tab-created', id);
+    const result = createBrowserTab(url);
+    event.reply('tab-created', result.id);
+});
+
+// NEW: Create tab with category
+ipcMain.on('new-tab-with-category', (event, { url, category }) => {
+    const result = createBrowserTab(url, category);
+    event.reply('tab-created-with-category', { id: result.id, category: result.category });
 });
 
 ipcMain.on('update-view-bounds', (event, boundsList) => {
     boundsList.forEach(({ id, bounds }) => {
-        const view = views.get(id);
-        if (view) {
-            view.setBounds(bounds);
+        const viewData = views.get(id);
+        if (viewData) {
+            viewData.view.setBounds(bounds);
         }
     });
 });
 
 ipcMain.on('sync-value', (event, value) => {
-    views.forEach((view) => {
+    views.forEach((viewData) => {
         const script = `
             (function() {
                 const inputs = document.querySelectorAll('input[type="text"], input:not([type]), textarea');
@@ -159,12 +168,12 @@ ipcMain.on('sync-value', (event, value) => {
                 });
             })();
         `;
-        view.webContents.executeJavaScript(script).catch(console.error);
+        viewData.view.webContents.executeJavaScript(script).catch(console.error);
     });
 });
 
 ipcMain.on('global-click', (event) => {
-    views.forEach((view) => {
+    views.forEach((viewData) => {
         const script = `
             (function() {
                 const btn = document.querySelector('.ComponentButton.InstanceActiveBonuses.Button');
@@ -175,18 +184,35 @@ ipcMain.on('global-click', (event) => {
                 }
             })();
         `;
-        view.webContents.executeJavaScript(script).catch(console.error);
+        viewData.view.webContents.executeJavaScript(script).catch(console.error);
     });
 });
 
 ipcMain.on('close-tab', (event, id) => {
-    const view = views.get(id);
-    if (view) {
-        mainWindow.removeBrowserView(view);
-        view.webContents.destroy();
+    const viewData = views.get(id);
+    if (viewData) {
+        mainWindow.removeBrowserView(viewData.view);
+        viewData.view.webContents.destroy();
         views.delete(id);
         updateGridLayout();
     }
+});
+
+// NEW: Navigate single view to new URL
+ipcMain.on('navigate-view', (event, { id, url }) => {
+    const viewData = views.get(id);
+    if (viewData) {
+        viewData.view.webContents.loadURL(url);
+    }
+});
+
+// NEW: Navigate all views in a category to URL
+ipcMain.on('navigate-category', (event, { category, url }) => {
+    views.forEach((viewData, id) => {
+        if (viewData.category === category) {
+            viewData.view.webContents.loadURL(url);
+        }
+    });
 });
 // Telegram Integration (GramJS)
 const { TelegramClient, Api } = require('telegram');

@@ -1,0 +1,694 @@
+
+> s@1.0.0 start
+> electron .
+
+Tray icon failed to load (check assets/icon.png path): Failed to load image from path '/Users/sefaozturk/Desktop/s/assets/icon.png'
+Anti-Idle mechanism started (5m interval)
+Existing session found and loaded.
+Loading Telegram client...
+[33m[2026-01-31T17:12:14.457] [INFO] - [Running gramJS version 2.26.21][0m
+[33m[2026-01-31T17:12:14.459] [INFO] - [Connecting to 149.154.167.91:80/TCPFull...][0m
+[33m[2026-01-31T17:12:14.521] [INFO] - [Connection to 149.154.167.91:80/TCPFull complete!][0m
+[33m[2026-01-31T17:12:14.522] [INFO] - [Using LAYER 198 for initial connect][0m
+[20897:0131/171214.753078:ERROR:CONSOLE:1] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[20897:0131/171214.753125:ERROR:CONSOLE:1] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+Telegram client connected!
+Session saved to file.
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Kapalı zaten açıldı mı o da be...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "KAPALI ZATEN AÇILDI MI O DA BELLI DEĞIL MK" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":548438272,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inve...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: mesajlarımız siliniyor...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "MESAJLARIMIZ SILINIYOR" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateUserStatus
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[20898:0131/171225.823679:ERROR:gpu/command_buffer/service/shared_image/shared_image_manager.cc:505] SharedImageManager::ProduceOverlay: Trying to Produce a Overlay representation from a non-existent mailbox.
+[20898:0131/171225.823944:ERROR:components/viz/service/display_embedder/skia_output_device_buffer_queue.cc:262] Invalid mailbox.
+[20898:0131/171225.823949:ERROR:gpu/command_buffer/service/shared_image/shared_image_manager.cc:505] SharedImageManager::ProduceOverlay: Trying to Produce a Overlay representation from a non-existent mailbox.
+[20898:0131/171225.823954:ERROR:components/viz/service/display_embedder/skia_output_device_buffer_queue.cc:262] Invalid mailbox.
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":11567360,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: zürkem bozdu ya valla yetkiyi ...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "ZÜRKEM BOZDU YA VALLA YETKIYI KÖTÜYE KULLANMAKTAN" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":11567360,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: /ban zürkemtny...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "/BAN ZÜRKEMTNY" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388992,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Bunu gerçekleştirmek için yöne...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "BUNU GERÇEKLEŞTIRMEK IÇIN YÖNETICI OLMALISINIZ." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":11567488,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Görkem adminden misilleme gelm...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "GÖRKEM ADMINDEN MISILLEME GELMELI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":11567360,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateReadChannelInbox
+[RAW DEBUG] Received update: UpdateUserStatus
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: stake haftalıkmı geldi...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "STAKE HAFTALIKMI GELDI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateReadChannelInbox
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateReadChannelInbox
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: ...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":545260288,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inv...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: /mute 24h...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: bugün iptal günümü amk...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "/MUTE 24H" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "BUGÜN IPTAL GÜNÜMÜ AMK" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Shhh... quiet now.
+Muted turan...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "SHHH... QUIET NOW.
+MUTED TURAN FOR 1 DAY." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Holi özeli alandan fazla kişi ...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "HOLI ÖZELI ALANDAN FAZLA KIŞI MUTE YEDI AQ" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":548438784,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inve...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateReadChannelInbox
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateDeleteChannelMessages
+[RAW DEBUG] Potential message update detected: {"channelId":"1985523791","messages":[5120919],"pts":6388478,"ptsCount":1,"className":"UpdateDeleteChannelMessages"}...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: SHXJSJXJSJS...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "SHXJSJXJSJS" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":11567360,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Ne ara kapandi...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "NE ARA KAPANDI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: /mute 24h...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "/MUTE 24H" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Shhh... quiet now.
+Muted SK fo...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "SHHH... QUIET NOW.
+MUTED SK FOR 1 DAY." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":33032,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertM...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Kendileri kaybeder spam atınca...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "KENDILERI KAYBEDER SPAM ATINCA" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Ananın amı...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "ANANIN AMI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateDeleteChannelMessages
+[RAW DEBUG] Potential message update detected: {"channelId":"1985523791","messages":[5120922],"pts":6388487,"ptsCount":1,"className":"UpdateDeleteChannelMessages"}...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Beyler şu an okx tr bekletiyor...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Kaoamış...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "BEYLER ŞU AN OKX TR BEKLETIYOR MI GLOBALE ATARKEN" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "KAOAMIŞ" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: /mute 24h...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "/MUTE 24H" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Shhh... quiet now.
+Muted Efe �...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "SHHH... QUIET NOW.
+MUTED EFE 🦍 FOR 1 DAY." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Son durum neydi...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "SON DURUM NEYDI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Yok...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "YOK" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateDeleteChannelMessages
+[RAW DEBUG] Potential message update detected: {"channelId":"1985523791","messages":[5120943],"pts":6388492,"ptsCount":1,"className":"UpdateDeleteChannelMessages"}...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Bizene bundan yarram satmasayd...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "BIZENE BUNDAN YARRAM SATMASAYDIN" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: /mute 24h...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "/MUTE 24H" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Shhh... quiet now.
+Muted Selim...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "SHHH... QUIET NOW.
+MUTED SELIMCAN FOR 1 DAY." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: aq girmeyecekseniz girmeyin sa...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "AQ GIRMEYECEKSENIZ GIRMEYIN SANKI ZORLA SOKUYORLAR GIBI NE SPAM ATIYONUZ APTAL MSIINZ AMK" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: 2. haftalık gelecek nerdeyse a...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "2. HAFTALIK GELECEK NERDEYSE AQ" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":536871176,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inv...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateDeleteChannelMessages
+[RAW DEBUG] Potential message update detected: {"channelId":"1985523791","messages":[5120956,5120957],"pts":6388500,"ptsCount":2,"className":"UpdateDeleteChannelMessages"}...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178888,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"3051100387","className":"PeerChannel"} | Text: Gençlerbirliği, Paulmark ile k...
+[TG DEBUG] Chat Details -> Title: "Bonus Hunters | Haber Tv" | ID: 3051100387
+[TG DEBUG] Checking text: "GENÇLERBIRLIĞI, PAULMARK ILE KIYAFET SPONSORLUĞU ANLAŞMASI YAPTI
+
+ TRENDYOL SÜPER LIG EKIPLERINDEN GENÇLERBIRLIĞI, TEKSTIL SEKTÖRÜNDE FAALIYET GÖSTEREN PAULMARK ILE SPONSORLUK ANLAŞMASI IMZALADI." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8406656,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":true,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178888,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: gaycasino bankadır...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "GAYCASINO BANKADIR" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: /mute 24h...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "/MUTE 24H" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Shhh... quiet now.
+Muted Siste...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "SHHH... QUIET NOW.
+MUTED SISTEMCORE FOR 1 DAY." for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":392,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":10536576,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":true,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178888,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"2349307526","className":"PeerChannel"} | Text: COLENDİ AKTİF ANLIK ÖDEME✅
+
+PA...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "MAİL ORDER 3D 2D CC POS YARDIMLAŞMA" | ID: 2349307526
+[TG DEBUG] Checking text: "COLENDİ AKTİF ANLIK ÖDEME✅
+
+PAYCELL AKTİF ANLIK ÖDEME✅
+
+UPTİON AKTİF ANLIK ÖDEME✅
+
+ÖDEMELERIMIZ ANLIKTIR MAX 20DK
+REF KEF ÖDEME KANITI MEVCUTTUR DÜRÜST ÇALIŞACAKLAR TOKAT ATMAYACAKLAR YAZABILIR
+
+ÖDEMELER DOLGUN💸" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Birileri öyle bir şey yazmıştı...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "BIRILERI ÖYLE BIR ŞEY YAZMIŞTI BURADA DA" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":540049672,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inve...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Gece atcam ondan sordum...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "GECE ATCAM ONDAN SORDUM" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateConnectionState
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: bende bekletiyor...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "BENDE BEKLETIYOR" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Yok daha dün attım knk...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "YOK DAHA DÜN ATTIM KNK" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: stake in kanalı bi atarmısın...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "STAKE IN KANALI BI ATARMISIN" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Kafaya göre mi?...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "KAFAYA GÖRE MI?" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Mantığı var mı...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "MANTIĞI VAR MI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: bilmyiorum ama çok eski hesap...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "BILMYIORUM AMA ÇOK ESKI HESAP" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: bi anda bekletmeye başladı...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "BI ANDA BEKLETMEYE BAŞLADI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Anladım kanka teşekkür ederim...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "ANLADIM KANKA TEŞEKKÜR EDERIM" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: linki attım bikaç saat önce ba...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "LINKI ATTIM BIKAÇ SAAT ÖNCE BAĞLANTILARDA VEYA MAILLERINDE VARDIR" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":536871176,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inv...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Aldım ben...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "ALDIM BEN" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: 1 DK DA KAPADI...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "1 DK DA KAPADI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Deminki mal nie 117 bulmus...
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Kral benim sohbettekibş açar m...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "DEMINKI MAL NIE 117 BULMUS" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateConnectionState
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "KRAL BENIM SOHBETTEKIBŞ AÇAR MISIN VALLA ZARIN YASAK OLDUĞUNU BILMIYORDUM" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":540049672,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"inve...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: kapattı direkt...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "KAPATTI DIREKT" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":3178760,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":false,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Yok açıktı 30 saniye dolmadan ...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "YOK AÇIKTI 30 SANIYE DOLMADAN KAPADI" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Denicez o zaman...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "DENICEZ O ZAMAN" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateEditChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":28346244,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":true,"pinned":true,"noforwards":false,"invert...
+[RAW DEBUG] Received update: UpdateUserStatus
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Sane gg aq...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "SANE GG AQ" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Ya...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "YA" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1985523791","className":"PeerChannel"} | Text: Vay amk...
+[TG DEBUG] Chat Details -> Title: "Bonuspops Extra1" | ID: 1985523791
+[TG DEBUG] Checking text: "VAY AMK" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":264,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"invertMed...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateConnectionState
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: Tek oynayan adam...
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "TEK OYNAYAN ADAM" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":8388864,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inver...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] NewMessage received! Peer: {"channelId":"1802232982","className":"PeerChannel"} | Text: ana kanalı atmam gerçek üyeler...
+[RAW DEBUG] Received update: UpdateChannelUserTyping
+[TG DEBUG] Chat Details -> Title: "BR FAM (LEGAL)" | ID: 1802232982
+[TG DEBUG] Checking text: "ANA KANALI ATMAM GERÇEK ÜYELER KATILABILIR" for keywords [MAT, JOJO]
+[TG DEBUG] No keyword match.
+[RAW DEBUG] Received update: UpdateNewChannelMessage
+[RAW DEBUG] Potential message update detected: {"message":{"flags":545259776,"out":false,"mentioned":false,"mediaUnread":false,"silent":false,"post":false,"fromScheduled":false,"legacy":false,"editHide":false,"pinned":false,"noforwards":false,"inv...

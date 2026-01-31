@@ -1,0 +1,17 @@
+
+> s@1.0.0 start
+> electron .
+
+Tray icon failed to load (check assets/icon.png path): Failed to load image from path '/Users/sefaozturk/Desktop/s/assets/icon.png'
+Anti-Idle mechanism started (5m interval)
+Existing session found and loaded.
+Loading Telegram client...
+[33m[2026-01-31T18:42:25.081] [INFO] - [Running gramJS version 2.26.21][0m
+[33m[2026-01-31T18:42:25.082] [INFO] - [Connecting to 149.154.167.91:80/TCPFull...][0m
+[33m[2026-01-31T18:42:25.139] [INFO] - [Connection to 149.154.167.91:80/TCPFull complete!][0m
+[33m[2026-01-31T18:42:25.140] [INFO] - [Using LAYER 198 for initial connect][0m
+Telegram client connected!
+Session saved to file.
+[22818:0131/184225.361674:ERROR:CONSOLE:1] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[22818:0131/184225.361702:ERROR:CONSOLE:1] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[RAW DEBUG] Received update: UpdateConnectionState

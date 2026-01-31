@@ -76,6 +76,96 @@
             background: #5c7cfa;
         }
 
+        /* Category Section */
+        #category-section {
+            background: #1f2023;
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-bottom: 1px solid #2c2e33;
+            -webkit-app-region: no-drag;
+        }
+
+        .category-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-label {
+            font-size: 11px;
+            color: #909296;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 120px;
+        }
+
+        #category-url-input {
+            flex: 1;
+            background: #2c2e33;
+            border: 1px solid #373a40;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        #category-url-input:focus {
+            border-color: #8ab4f8;
+        }
+
+        .category-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .category-open-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .category-open-btn.blue {
+            background: #4c6ef5;
+        }
+
+        .category-open-btn.blue:hover {
+            background: #5c7cfa;
+        }
+
+        .category-open-btn.red {
+            background: #fa5252;
+        }
+
+        .category-open-btn.red:hover {
+            background: #ff6b6b;
+        }
+
+        .category-open-btn.yellow {
+            background: #fab005;
+        }
+
+        .category-open-btn.yellow:hover {
+            background: #fcc419;
+        }
+
+        .category-open-btn.black {
+            background: #343a40;
+            border: 1px solid #495057;
+        }
+
+        .category-open-btn.black:hover {
+            background: #495057;
+        }
+
         #sync-area {
             background: #1a1b1e;
             padding: 15px;
@@ -136,7 +226,6 @@
             position: relative;
             background: #141517;
             overflow-y: scroll;
-            /* Force scrollbar visibility */
             overflow-x: hidden;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
@@ -144,6 +233,7 @@
             gap: 20px;
             padding: 20px;
             align-content: start;
+            z-index: 1;
         }
 
         .grid-placeholder {
@@ -158,20 +248,38 @@
             position: relative;
         }
 
+        /* Category border colors */
+        .grid-placeholder.category-blue {
+            border-color: #4c6ef5;
+        }
+
+        .grid-placeholder.category-red {
+            border-color: #fa5252;
+        }
+
+        .grid-placeholder.category-yellow {
+            border-color: #fab005;
+        }
+
+        .grid-placeholder.category-black {
+            border-color: #495057;
+        }
+
         .grid-placeholder.maximized {
             position: fixed;
-            top: 150px;
-            /* Below sync-area */
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            z-index: 500;
-            grid-column: 1 / -1;
-            grid-row: 1 / -1;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            border-radius: 0;
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
         }
 
         .grid-placeholder:hover {
-            border-color: #4c6ef5;
+            box-shadow: 0 0 20px rgba(76, 110, 245, 0.3);
         }
 
         .grid-header {
@@ -188,10 +296,62 @@
             box-sizing: border-box;
         }
 
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-title span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .category-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .category-indicator.blue {
+            background: #4c6ef5;
+        }
+
+        .category-indicator.red {
+            background: #fa5252;
+        }
+
+        .category-indicator.yellow {
+            background: #fab005;
+        }
+
+        .category-indicator.black {
+            background: #495057;
+        }
+
         .header-controls {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
+        }
+
+        .grid-edit {
+            cursor: pointer;
+            color: #69db7c;
+            font-weight: bold;
+            font-size: 11px;
+            user-select: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #2c2e33;
+        }
+
+        .grid-edit:hover {
+            background: #373a40;
         }
 
         .grid-maximize {
@@ -222,8 +382,8 @@
             color: #ff6b6b;
         }
 
-        /* Login Modal Styles */
-        #login-modal {
+        /* Modals */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -241,7 +401,7 @@
             background: #25262b;
             padding: 30px;
             border-radius: 12px;
-            width: 400px;
+            width: 420px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             border: 1px solid #373a40;
             display: flex;
@@ -290,6 +450,61 @@
             border-color: #8ab4f8;
         }
 
+        /* Category selector */
+        .category-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .category-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-option.blue {
+            background: #4c6ef5;
+        }
+
+        .category-option.red {
+            background: #fa5252;
+        }
+
+        .category-option.yellow {
+            background: #fab005;
+        }
+
+        .category-option.black {
+            background: #343a40;
+            border: 3px solid #495057;
+        }
+
+        .category-option:hover {
+            transform: scale(1.1);
+        }
+
+        .category-option.selected {
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        .category-option .check-icon {
+            display: none;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .category-option.selected .check-icon {
+            display: block;
+        }
+
         .modal-buttons {
             display: flex;
             gap: 10px;
@@ -335,6 +550,21 @@
                 <button id="new-tab-btn">+ ADD VIEW</button>
             </div>
         </div>
+
+        <!-- Category URL Section -->
+        <div id="category-section">
+            <div class="category-row">
+                <span class="category-label">Kategoriye Link Aç:</span>
+                <input type="text" id="category-url-input" placeholder="URL yapıştır...">
+                <div class="category-buttons">
+                    <button class="category-open-btn blue" data-category="blue">🔵 Mavi</button>
+                    <button class="category-open-btn red" data-category="red">🔴 Kırmızı</button>
+                    <button class="category-open-btn yellow" data-category="yellow">🟡 Sarı</button>
+                    <button class="category-open-btn black" data-category="black">⚫ Siyah</button>
+                </div>
+            </div>
+        </div>
+
         <div id="sync-area">
             <span class="sync-label">Global Text:</span>
             <input type="text" id="input-id-yaz" placeholder="Type here to sync to all views below...">
@@ -345,8 +575,62 @@
             <!-- Grid placeholders will be created here -->
         </div>
 
+        <!-- Create Page Modal -->
+        <div id="create-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>🌐 Yeni Sayfa Ekle</h2>
+                <p>URL girin ve kategori seçin</p>
+
+                <div class="input-group">
+                    <label>URL</label>
+                    <input type="text" id="create-url-input" class="modal-input" placeholder="https://example.com">
+                </div>
+
+                <div class="input-group">
+                    <label>Kategori</label>
+                    <div class="category-selector">
+                        <div class="category-option blue selected" data-category="blue">
+                            <span class="check-icon">✓</span>
+                        </div>
+                        <div class="category-option red" data-category="red">
+                            <span class="check-icon">✓</span>
+                        </div>
+                        <div class="category-option yellow" data-category="yellow">
+                            <span class="check-icon">✓</span>
+                        </div>
+                        <div class="category-option black" data-category="black">
+                            <span class="check-icon">✓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="create-cancel" class="modal-btn secondary">İptal</button>
+                    <button id="create-submit" class="modal-btn primary">Oluştur</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit URL Modal -->
+        <div id="edit-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>✏️ URL Düzenle</h2>
+                <p>Yeni URL girin</p>
+
+                <div class="input-group">
+                    <label>Yeni URL</label>
+                    <input type="text" id="edit-url-input" class="modal-input" placeholder="https://example.com">
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="edit-cancel" class="modal-btn secondary">İptal</button>
+                    <button id="edit-submit" class="modal-btn primary">Kaydet</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Telegram Login Modal -->
-        <div id="login-modal">
+        <div id="login-modal" class="modal-overlay">
             <div class="modal-content">
                 <h2 id="modal-title">Telegram Login</h2>
                 <p id="modal-desc">Please enter your phone number to sign in.</p>

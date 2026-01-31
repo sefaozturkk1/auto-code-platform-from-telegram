@@ -4,15 +4,90 @@ const gridContainer = document.getElementById('grid-container');
 const syncInput = document.getElementById('input-id-yaz');
 const alBtn = document.getElementById('buton-id-yaz');
 
-let views = []; // { id, url, element }
+// Category URL section
+const categoryUrlInput = document.getElementById('category-url-input');
+const categoryButtons = document.querySelectorAll('.category-open-btn');
 
-function createViewPlaceholder(id, url) {
+// Create Modal elements
+const createModal = document.getElementById('create-modal');
+const createUrlInput = document.getElementById('create-url-input');
+const categoryOptions = document.querySelectorAll('.category-option');
+const createSubmit = document.getElementById('create-submit');
+const createCancel = document.getElementById('create-cancel');
+
+// Edit Modal elements
+const editModal = document.getElementById('edit-modal');
+const editUrlInput = document.getElementById('edit-url-input');
+const editSubmit = document.getElementById('edit-submit');
+const editCancel = document.getElementById('edit-cancel');
+
+let views = []; // { id, url, category, element }
+let selectedCategory = 'blue';
+let editingViewId = null;
+
+// --- Category Selection in Create Modal ---
+categoryOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        categoryOptions.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedCategory = option.dataset.category;
+    });
+});
+
+// --- Open Create Modal ---
+newTabBtn.onclick = () => {
+    isModalOpen = true;
+    updateGridStyles(); // Hides views
+    createUrlInput.value = urlInput.value.trim() || 'https://';
+    createModal.style.display = 'flex';
+    createUrlInput.focus();
+    createUrlInput.select();
+};
+
+// --- Create Modal Actions ---
+createSubmit.onclick = () => {
+    let url = createUrlInput.value.trim();
+    if (!url) return;
+    if (!url.startsWith('http')) url = `https://${url}`;
+
+    window.electronAPI.newTabWithCategory(url, selectedCategory);
+    createModal.style.display = 'none';
+    isModalOpen = false;
+    updateGridStyles(); // Shows views
+};
+
+createCancel.onclick = () => {
+    createModal.style.display = 'none';
+    isModalOpen = false;
+    updateGridStyles(); // Shows views
+};
+
+// --- Category Batch URL Opening ---
+categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        let url = categoryUrlInput.value.trim();
+        if (!url) return;
+        if (!url.startsWith('http')) url = `https://${url}`;
+
+        const category = btn.dataset.category;
+        window.electronAPI.navigateCategoryViews(category, url);
+    });
+});
+
+// --- Create View Placeholder with Category ---
+function createViewPlaceholder(id, url, category = 'blue') {
     const placeholder = document.createElement('div');
-    placeholder.className = 'grid-placeholder';
+    placeholder.className = `grid-placeholder category-${category}`;
     placeholder.dataset.id = id;
 
     const header = document.createElement('div');
     header.className = 'grid-header';
+
+    const titleContainer = document.createElement('div');
+    titleContainer.className = 'header-title';
+
+    const categoryIndicator = document.createElement('div');
+    categoryIndicator.className = `category-indicator ${category}`;
 
     const title = document.createElement('span');
     try {
@@ -21,8 +96,19 @@ function createViewPlaceholder(id, url) {
         title.innerText = url;
     }
 
+    titleContainer.appendChild(categoryIndicator);
+    titleContainer.appendChild(title);
+
     const controls = document.createElement('div');
     controls.className = 'header-controls';
+
+    const editBtn = document.createElement('span');
+    editBtn.className = 'grid-edit';
+    editBtn.innerText = 'DÜZENLE';
+    editBtn.onclick = (e) => {
+        e.stopPropagation();
+        openEditModal(id, url);
+    };
 
     const maxBtn = document.createElement('span');
     maxBtn.className = 'grid-maximize';
@@ -40,72 +126,138 @@ function createViewPlaceholder(id, url) {
         closeView(id);
     };
 
+    controls.appendChild(editBtn);
     controls.appendChild(maxBtn);
     controls.appendChild(closeBtn);
-    header.appendChild(title);
+    header.appendChild(titleContainer);
     header.appendChild(controls);
     placeholder.appendChild(header);
 
     gridContainer.appendChild(placeholder);
 
-    views.push({ id, url, element: placeholder });
-    updateGridStyles();
+    views.push({ id, url, category, element: placeholder });
+
+    // Wait for DOM layout to complete before calculating bounds
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            updateGridStyles();
+        });
+    });
 }
+
+// --- Edit Modal Functions ---
+function openEditModal(id, currentUrl) {
+    editingViewId = id;
+    editUrlInput.value = currentUrl;
+    editModal.style.display = 'flex';
+    isModalOpen = true;
+    updateGridStyles(); // Hides views
+    editUrlInput.focus();
+    editUrlInput.select();
+}
+
+editSubmit.onclick = () => {
+    let url = editUrlInput.value.trim();
+    if (!url || !editingViewId) return;
+    if (!url.startsWith('http')) url = `https://${url}`;
+
+    window.electronAPI.navigateView(editingViewId, url);
+
+    // Update local view data
+    const view = views.find(v => v.id === editingViewId);
+    if (view) {
+        view.url = url;
+        const title = view.element.querySelector('.header-title span');
+        try {
+            title.innerText = new URL(url).hostname;
+        } catch {
+            title.innerText = url;
+        }
+    }
+
+    editModal.style.display = 'none';
+    editingViewId = null;
+    isModalOpen = false;
+    updateGridStyles(); // Shows views
+};
+
+editCancel.onclick = () => {
+    editModal.style.display = 'none';
+    editingViewId = null;
+    isModalOpen = false;
+    updateGridStyles(); // Shows views
+};
 
 function toggleMaximize(id, element, btn) {
     const isMaximized = element.classList.toggle('maximized');
     btn.innerText = isMaximized ? 'KÜÇÜLT' : 'BÜYÜT';
 
-    // When maximizing, we might want to disable scrolling on container
     gridContainer.style.overflowY = isMaximized ? 'hidden' : 'scroll';
 
     updateGridStyles();
 }
 
+// Flag to control view visibility during modal interactions
+let isModalOpen = false;
+
 function updateGridStyles() {
     if (views.length === 0) return;
 
+    // If a modal is open, hide all BrowserViews so they don't cover the HTML modal
+    if (isModalOpen) {
+        const hiddenBounds = views.map(v => ({
+            id: v.id,
+            bounds: { x: -9999, y: -9999, width: 0, height: 0 }
+        }));
+        window.electronAPI.updateViewBounds(hiddenBounds);
+        return;
+    }
+
     const containerRect = gridContainer.getBoundingClientRect();
-    const headerHeight = 36; // Updated header height
+    const cardHeaderHeight = 36;
+
+    // Minimum Y is the top of the grid container (scrolling area)
+    const minY = Math.round(containerRect.top);
+    const containerBottom = Math.round(containerRect.bottom);
+    const containerLeft = Math.round(containerRect.left);
+    const containerRight = Math.round(containerRect.right);
 
     const boundsData = views.map(v => {
         const rect = v.element.getBoundingClientRect();
         const isMaximized = v.element.classList.contains('maximized');
 
-        // Calculate the content area of the placeholder
-        let contentX = Math.round(rect.x);
-        let contentY = Math.round(rect.y + headerHeight);
-        let contentWidth = Math.round(rect.width);
-        let contentHeight = Math.round(rect.height - headerHeight);
+        // Card content area (below the header bar)
+        const cardContentY = rect.y + cardHeaderHeight;
+        const cardContentHeight = rect.height - cardHeaderHeight;
 
-        // If maximized, we don't clip by the container's bounds
         if (isMaximized) {
             return {
                 id: v.id,
                 bounds: {
-                    x: contentX,
-                    y: contentY,
-                    width: contentWidth,
-                    height: contentHeight
+                    x: 0,
+                    y: minY, // Start from grid container top
+                    width: Math.round(window.innerWidth),
+                    height: Math.round(window.innerHeight - minY)
                 }
             };
         }
 
-        // Clipping logic relative to the grid container
-        // We need to ensure the view doesn't overlap the header/sync area
-        const visibleTop = Math.max(contentY, containerRect.top);
-        const visibleBottom = Math.min(contentY + contentHeight, containerRect.bottom);
-        const visibleLeft = Math.max(contentX, containerRect.left);
-        const visibleRight = Math.min(contentX + contentWidth, containerRect.right);
+        // Clip to grid container
+        let visibleTop = Math.max(cardContentY, minY);
+        const visibleBottom = Math.min(cardContentY + cardContentHeight, containerBottom);
+        const visibleLeft = Math.max(rect.x, containerLeft);
+        const visibleRight = Math.min(rect.x + rect.width, containerRight);
+
+        // ENFORCE: visibleTop must NEVER be less than minY
+        visibleTop = Math.max(visibleTop, minY);
 
         const visibleWidth = Math.max(0, visibleRight - visibleLeft);
         const visibleHeight = Math.max(0, visibleBottom - visibleTop);
 
-        // If the view is completely scrolled out, move it off-screen
         if (visibleWidth <= 0 || visibleHeight <= 0) {
             return {
                 id: v.id,
-                bounds: { x: -1000, y: -1000, width: 0, height: 0 }
+                bounds: { x: -9999, y: -9999, width: 0, height: 0 }
             };
         }
 
@@ -123,7 +275,6 @@ function updateGridStyles() {
     window.electronAPI.updateViewBounds(boundsData);
 }
 
-// Add scroll listener for the grid container
 gridContainer.addEventListener('scroll', () => {
     updateGridStyles();
 });
@@ -136,20 +287,19 @@ function closeView(id) {
     if (index !== -1) {
         views[index].element.remove();
         views.splice(index, 1);
-        // No need to manually update styles, grid CSS handles it, but we need to sync bounds
         updateGridStyles();
     }
 }
 
-newTabBtn.onclick = () => {
-    let url = urlInput.value.trim();
-    if (!url) return;
-    if (!url.startsWith('http')) url = `https://${url}`;
-    window.electronAPI.newTab(url);
-};
+// --- Handle Tab Created with Category ---
+window.electronAPI.onTabCreatedWithCategory(({ id, category }) => {
+    const url = createUrlInput.value.trim() || urlInput.value.trim();
+    createViewPlaceholder(id, url, category);
+});
 
+// Legacy tab created (backwards compat)
 window.electronAPI.onTabCreated((id) => {
-    createViewPlaceholder(id, urlInput.value);
+    createViewPlaceholder(id, urlInput.value, 'blue');
 });
 
 // Value Sync Logic
@@ -158,7 +308,7 @@ syncInput.addEventListener('input', () => {
     clearTimeout(syncTimeout);
     syncTimeout = setTimeout(() => {
         window.electronAPI.syncValue(syncInput.value);
-    }, 100); // Faster sync for grid mode
+    }, 100);
 });
 
 alBtn.onclick = () => {
@@ -215,17 +365,11 @@ modalSubmit.onclick = () => {
     if (!value) return;
 
     window.electronAPI.sendTelegramAuth(value);
-
-    // Optimistically hide or show loading? For now just wait for next request or close
-    if (currentAuthType !== 'phoneNumber') {
-        // usually code/password are last steps
-        // we'll keep it open until main tells us it's done or errors
-    }
 };
 
 modalCancel.onclick = () => {
     loginModal.style.display = 'none';
-    window.electronAPI.sendTelegramAuth(null); // Signal cancellation
+    window.electronAPI.sendTelegramAuth(null);
 };
 
 // --- Code Queuing System ---
@@ -240,12 +384,9 @@ async function processQueue() {
 
     console.log(`[QUEUE] Processing next code: ${data}`);
 
-    // 1. Update the input field
     syncInput.value = data;
     syncInput.dispatchEvent(new Event('input', { bubbles: true }));
 
-    // 2. 10 second fast click loop (Spam mode)
-    // 100ms interval * 100 clicks = 10 seconds
     return new Promise((resolve) => {
         let clickCount = 0;
         const clickInterval = setInterval(() => {
@@ -254,7 +395,7 @@ async function processQueue() {
                 console.log(`[QUEUE] Finished 10s cycle for: ${data}`);
                 isProcessingQueue = false;
                 resolve();
-                processQueue(); // Process next item
+                processQueue();
                 return;
             }
             alBtn.click();
@@ -270,7 +411,6 @@ window.electronAPI.onTelegramMessage((data) => {
     processQueue();
 });
 
-// Create initial views if requested, or just wait for user
 window.onload = () => {
-    // Optional: window.electronAPI.newTab('https://google.com');
+    // App ready
 };

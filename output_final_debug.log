@@ -1,0 +1,38 @@
+
+> s@1.0.0 start
+> electron .
+
+Tray icon failed to load (check assets/icon.png path): Failed to load image from path '/Users/sefaozturk/Desktop/s/assets/icon.png'
+Anti-Idle mechanism started (5m interval)
+Existing session found and loaded.
+Loading Telegram client...
+[33m[2026-01-31T18:49:32.999] [INFO] - [Running gramJS version 2.26.21][0m
+[33m[2026-01-31T18:49:33.000] [INFO] - [Connecting to 149.154.167.91:80/TCPFull...][0m
+[33m[2026-01-31T18:49:33.062] [INFO] - [Connection to 149.154.167.91:80/TCPFull complete!][0m
+[33m[2026-01-31T18:49:33.062] [INFO] - [Using LAYER 198 for initial connect][0m
+Telegram client connected!
+Session saved to file.
+[TG DISCOVERY] Fetching dialogs...
+[TG DISCOVERY] Found 46 dialogs.
+[TG DISCOVERY] - Channel/User: "BONUS UZMANI |FORUMBANKO" | ID: -1001904588149
+[TG DISCOVERY] - Channel/User: "KODTIME DUYURU" | ID: -1001878199970
+[TG DISCOVERY] - Channel/User: "Telegram" | ID: 777000
+[TG DISCOVERY] - Channel/User: "kk" | ID: 5584263935
+[TG DISCOVERY] - Channel/User: "can" | ID: 8313438494
+[TG DISCOVERY] - Channel/User: "PUSULABET TELEGRAM DESTEK" | ID: 6538085824
+[TG DISCOVERY] - Channel/User: "Pusula Call Center 7/24" | ID: 7314091045
+[TG DISCOVERY] - Channel/User: "stepevening" | ID: -1002082352773
+[TG DISCOVERY] - Channel/User: "▫️⚜️Kral Kazanç⚜️▫️" | ID: -1003227314309
+[TG DISCOVERY] - Channel/User: "elif cilce" | ID: 8528330508
+[TG DISCOVERY] - Channel/User: "Katlego" | ID: 8249682496
+[TG DISCOVERY] - Channel/User: "No Title" | ID: 8227337657
+[TG DISCOVERY] - Channel/User: "Aşina Emir" | ID: 8414072474
+[TG DISCOVERY] - Channel/User: "umut" | ID: 8236404808
+[TG DISCOVERY] - Channel/User: "kadir abi berber eskişehir" | ID: 8214352832
+[TG DISCOVERY] - Channel/User: "aytuğ3" | ID: 8236904721
+[TG DISCOVERY] - Channel/User: "günlük3" | ID: 8279712515
+[TG DISCOVERY] - Channel/User: "ev eses" | ID: 8419251496
+[TG DISCOVERY] - Channel/User: "Şuap Abi" | ID: 7868127101
+[TG DISCOVERY] - Channel/User: "a" | ID: 7945823940
+[23875:0131/184937.103978:ERROR:CONSOLE:1] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[23875:0131/184937.104008:ERROR:CONSOLE:1] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
