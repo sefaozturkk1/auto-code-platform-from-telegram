@@ -247,6 +247,55 @@ async function getGUIInput(type) {
     });
 }
 
+// --- Message Processing Logic (Refactored for reuse) ---
+async function processMessage(message) {
+    if (!message) return;
+
+    try {
+        const text = message.message || "";
+        const entities = message.entities || [];
+
+        // --- Peer Identification (Logging Only) ---
+        let chat = null;
+        let chatId = "unknown";
+        let chatTitle = "unknown";
+
+        try {
+            // This might fail or hang if cache is missing
+            chat = await message.getChat();
+            chatId = chat ? (chat.id ? chat.id.toString() : "") : "unknown";
+            chatTitle = chat ? (chat.title || "") : "unknown";
+        } catch (chatErr) {
+            // console.log("[TG DEBUG] Could not resolve chat entity:", chatErr.message);
+        }
+
+        const upperText = text.toUpperCase();
+        // Log only if it matches keywords to reduce noise
+        if (upperText.includes('MAT') || upperText.includes('JOJO')) {
+            console.log(`[TG MSG] MATCHED in: "${chatTitle}" [ID: ${chatId}]. Text: ${text.substring(0, 50)}...`);
+
+            let extractedText = text;
+
+            const codeEntity = entities.find(e =>
+                e.className === 'MessageEntityCode' ||
+                e.className === 'MessageEntityPre' ||
+                (e.constructor && (e.constructor.name === 'MessageEntityCode' || e.constructor.name === 'MessageEntityPre'))
+            );
+
+            if (codeEntity) {
+                extractedText = text.substring(codeEntity.offset, codeEntity.offset + codeEntity.length);
+                console.log(`Extracted monospaced text: ${extractedText}`);
+            }
+
+            if (mainWindow) {
+                mainWindow.webContents.send('telegram-message', extractedText);
+            }
+        }
+    } catch (err) {
+        console.error("Error in processMessage:", err);
+    }
+}
+
 async function startTelegramBot() {
     SESSION_FILE_PATH = path.join(app.getPath('userData'), 'telegram_session.txt');
 
@@ -272,50 +321,69 @@ async function startTelegramBot() {
         });
 
         console.log("Telegram client connected!");
+
+        console.log("Fetching dialogs to populate entity cache...");
+        const dialogs = await client.getDialogs({});
+        console.log(`Entity cache populated with ${dialogs.length} chats.`);
+
         const savedSession = client.session.save();
         fs.writeFileSync(SESSION_FILE_PATH, savedSession, 'utf8');
         console.log("Session saved to file.");
 
+        // --- POLLING MECHANISM FOR PROBLEMATIC CHANNELS ---
+        const TARGET_CHANNEL_IDS = [
+            '-1001904588149', // BONUS UZMANI...
+
+        ];
+
+        console.log(`Starting active polling for ${TARGET_CHANNEL_IDS.length} channels...`);
+
+        let lastMessageIds = new Map(); // Store last processed msg ID to avoid duplicates
+
+        // Serialized Polling Loop to prevent FloodWait
+        const DELAY_BETWEEN = 4000; // 4 seconds between requests
+        (async () => {
+            while (true) {
+                for (const channelId of TARGET_CHANNEL_IDS) {
+                    try {
+                        const messages = await client.getMessages(channelId, { limit: 1 });
+                        if (messages && messages.length > 0) {
+                            const msg = messages[0];
+                            if (!lastMessageIds.has(channelId) || lastMessageIds.get(channelId) !== msg.id) {
+                                const now = Math.floor(Date.now() / 1000);
+                                if (now - msg.date < 60) {
+                                    // LOG CONTENT AS REQUESTED
+                                    const preview = msg.message ? msg.message.substring(0, 50).replace(/\n/g, ' ') : "No text";
+                                    console.log(`[POLLING] New message in ${channelId}: "${preview}..."`);
+                                    processMessage(msg);
+                                }
+                                lastMessageIds.set(channelId, msg.id);
+                            }
+                        }
+                    } catch (e) {
+                        if (e.seconds) {
+                            console.log(`[POLLING] Rate limit hit. Waiting ${e.seconds}s...`);
+                            await new Promise(r => setTimeout(r, (e.seconds + 1) * 1000));
+                        }
+                    }
+                    // Wait between requests to ensure we don't spam
+                    await new Promise(r => setTimeout(r, DELAY_BETWEEN));
+                }
+            }
+        })();
+        // --------------------------------------------------
+
         // We listen to all messages and filter manually inside to avoid ResolveUsername errors
         client.addEventHandler(async (event) => {
             try {
-                const message = event.message;
-                const text = message.message || "";
-                const entities = message.entities || [];
-
-                // --- Peer Identification (Logging Only) ---
-                const chat = await message.getChat();
-                const chatId = chat ? (chat.id ? chat.id.toString() : "") : "unknown";
-                const chatTitle = chat ? (chat.title || "") : "unknown";
-
-                console.log(`[TG DEBUG] Incoming from: "${chatTitle}" [ID: ${chatId}]. Checking keywords in: ${text}`);
-
-                // Filter by keywords MAT or JOJO (Case-Insensitive)
-                const upperText = text.toUpperCase();
-                if (upperText.includes('MAT') || upperText.includes('JOJO')) {
-                    console.log(`[TG DEBUG] Matched Keywords!`);
-
-                    let extractedText = text;
-
-                    const codeEntity = entities.find(e =>
-                        e.className === 'MessageEntityCode' ||
-                        e.className === 'MessageEntityPre' ||
-                        (e.constructor && (e.constructor.name === 'MessageEntityCode' || e.constructor.name === 'MessageEntityPre'))
-                    );
-
-                    if (codeEntity) {
-                        extractedText = text.substring(codeEntity.offset, codeEntity.offset + codeEntity.length);
-                        console.log(`Extracted monospaced text: ${extractedText}`);
-                    }
-
-                    if (mainWindow) {
-                        mainWindow.webContents.send('telegram-message', extractedText);
-                    }
+                // Also use standard event listener as fallback/primary for other channels
+                if (event.message) {
+                    processMessage(event.message);
                 }
             } catch (err) {
                 console.error("Error in message handler:", err);
             }
-        }, new NewMessage({})); // Listen to everything, filter inside
+        }, new NewMessage());
 
     } catch (err) {
         console.error("Failed to start Telegram client:", err);
