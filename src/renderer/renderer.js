@@ -390,7 +390,7 @@ async function processQueue() {
     return new Promise((resolve) => {
         let clickCount = 0;
         const clickInterval = setInterval(() => {
-            if (clickCount >= 100) {
+            if (clickCount >= 17) { // ~10 saniye için (17 * 600ms = 10.2s)
                 clearInterval(clickInterval);
                 console.log(`[QUEUE] Finished 10s cycle for: ${data}`);
                 isProcessingQueue = false;
@@ -400,7 +400,7 @@ async function processQueue() {
             }
             alBtn.click();
             clickCount++;
-        }, 100);
+        }, 600); // 600ms aralıklarla bas
     });
 }
 

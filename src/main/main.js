@@ -206,6 +206,37 @@ function startAntiIdle() {
             `).catch(() => { });
         });
     }, 2 * 60 * 1000); // 2 dakika
+
+    // Ek: Her 10 dakikada bir /casino path'ine gidip geri dön (gerçek navigasyon ile anti-idle)
+    setInterval(() => {
+        if (views.size === 0) return;
+        console.log(`[ANTI-IDLE] Triggering page navigation anti-idle on ${views.size} views...`);
+
+        views.forEach((viewData, viewId) => {
+            const currentUrl = viewData.view.webContents.getURL();
+
+            try {
+                const urlObj = new URL(currentUrl);
+                const originalPath = urlObj.pathname;
+
+                // /casino path'ine git
+                urlObj.pathname = '/casino';
+                const casinoUrl = urlObj.toString();
+
+                console.log(`[ANTI-IDLE] View ${viewId}: Navigating from ${currentUrl} to ${casinoUrl}`);
+                viewData.view.webContents.loadURL(casinoUrl);
+
+                // 5 saniye sonra eski URL'e geri dön
+                setTimeout(() => {
+                    console.log(`[ANTI-IDLE] View ${viewId}: Returning to original URL: ${currentUrl}`);
+                    viewData.view.webContents.loadURL(currentUrl);
+                }, 5000);
+
+            } catch (err) {
+                console.log(`[ANTI-IDLE] Could not parse URL for view ${viewId}:`, err.message);
+            }
+        });
+    }, 10 * 60 * 1000); // 10 dakika
 }
 
 function createBrowserTab(url, category = 'blue') {
