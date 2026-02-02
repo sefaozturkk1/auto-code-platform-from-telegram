@@ -61,18 +61,141 @@ function createTray() {
 }
 
 function startAntiIdle() {
-    console.log("Anti-Idle mechanism started (5m interval)");
+    console.log("Anti-Idle mechanism started (1m interval - aggressive mode)");
+
+    // Ana anti-idle döngüsü - 1 dakikada bir
     setInterval(() => {
         if (views.size === 0) return;
-        console.log("Triggering anti-idle action in active views...");
+        console.log(`[ANTI-IDLE] Triggering keep-alive actions on ${views.size} views...`);
+
+        views.forEach((viewData, viewId) => {
+            const script = `
+                (function() {
+                    try {
+                        // 1. Random mouse move event
+                        const randomX = Math.floor(Math.random() * window.innerWidth);
+                        const randomY = Math.floor(Math.random() * window.innerHeight);
+                        const mouseMoveEvent = new MouseEvent('mousemove', {
+                            bubbles: true,
+                            cancelable: true,
+                            clientX: randomX,
+                            clientY: randomY
+                        });
+                        document.dispatchEvent(mouseMoveEvent);
+                        
+                        // 2. Focus event on document
+                        document.dispatchEvent(new Event('focus', { bubbles: true }));
+                        window.dispatchEvent(new Event('focus'));
+                        
+                        // 3. Visibility change simulation (page visible)
+                        if (document.hidden) {
+                            Object.defineProperty(document, 'hidden', { value: false, writable: true });
+                            Object.defineProperty(document, 'visibilityState', { value: 'visible', writable: true });
+                            document.dispatchEvent(new Event('visibilitychange'));
+                        }
+                        
+                        // 4. Keyboard activity simulation (harmless key)
+                        const keyEvent = new KeyboardEvent('keydown', {
+                            bubbles: true,
+                            cancelable: true,
+                            key: 'Shift',
+                            code: 'ShiftLeft',
+                            keyCode: 16,
+                            which: 16
+                        });
+                        document.dispatchEvent(keyEvent);
+                        setTimeout(() => {
+                            document.dispatchEvent(new KeyboardEvent('keyup', {
+                                bubbles: true,
+                                cancelable: true,
+                                key: 'Shift',
+                                code: 'ShiftLeft',
+                                keyCode: 16,
+                                which: 16
+                            }));
+                        }, 50);
+                        
+                        // 5. Tiny scroll and back
+                        const currentScroll = window.scrollY;
+                        window.scrollBy(0, 1);
+                        setTimeout(() => window.scrollTo(0, currentScroll), 100);
+                        
+                        // 6. Touch/pointer events for mobile-responsive sites
+                        const pointerEvent = new PointerEvent('pointermove', {
+                            bubbles: true,
+                            cancelable: true,
+                            clientX: randomX,
+                            clientY: randomY,
+                            pointerType: 'mouse'
+                        });
+                        document.dispatchEvent(pointerEvent);
+                        
+                        // 7. Periodic click on body (not on buttons/links)
+                        const bodyClick = new MouseEvent('click', {
+                            bubbles: true,
+                            cancelable: true,
+                            clientX: 10,
+                            clientY: 10
+                        });
+                        // Only click on body itself, not interactive elements
+                        if (document.body) {
+                            document.body.dispatchEvent(bodyClick);
+                        }
+                        
+                        // 8. Activity timestamp update (for sites that check this)
+                        window.__lastActivity = Date.now();
+                        sessionStorage.setItem('__antiIdleTimestamp', Date.now().toString());
+                        
+                        console.log('[ANTI-IDLE] Keep-alive actions executed at ' + new Date().toLocaleTimeString());
+                        return true;
+                    } catch (e) {
+                        console.error('[ANTI-IDLE] Error:', e.message);
+                        return false;
+                    }
+                })();
+            `;
+            viewData.view.webContents.executeJavaScript(script).catch((err) => {
+                console.log(`[ANTI-IDLE] Script execution failed for view ${viewId}:`, err.message);
+            });
+        });
+    }, 60 * 1000); // 1 dakika
+
+    // Ek: Her 30 saniyede bir hafif aktivite (bazı siteler daha kısa timeout kullanır)
+    setInterval(() => {
+        if (views.size === 0) return;
         views.forEach((viewData) => {
-            // Simulate a tiny scroll to prevent timeout
             viewData.view.webContents.executeJavaScript(`
-                window.scrollBy(0, 1);
-                setTimeout(() => window.scrollBy(0, -1), 100);
+                document.dispatchEvent(new MouseEvent('mousemove', {
+                    bubbles: true, clientX: Math.random() * 100, clientY: Math.random() * 100
+                }));
+                window.dispatchEvent(new Event('focus'));
             `).catch(() => { });
         });
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 30 * 1000); // 30 saniye
+
+    // Ek: Network activity simulation - her 2 dakikada bir (cookie refresh için)
+    setInterval(() => {
+        if (views.size === 0) return;
+        console.log(`[ANTI-IDLE] Triggering session refresh...`);
+        views.forEach((viewData) => {
+            viewData.view.webContents.executeJavaScript(`
+                (function() {
+                    // Trigger any heartbeat mechanisms the site might have
+                    if (typeof window.onbeforeunload === 'function') {
+                        // Site has unload handler, likely has session management
+                    }
+                    // Force cookie access to refresh timestamps
+                    document.cookie;
+                    // Touch localStorage to trigger any watchers
+                    try {
+                        const dummy = localStorage.getItem('__antiIdlePing');
+                        localStorage.setItem('__antiIdlePing', Date.now().toString());
+                    } catch(e) {}
+                    console.log('[ANTI-IDLE] Session refresh at ' + new Date().toLocaleTimeString());
+                })();
+            `).catch(() => { });
+        });
+    }, 2 * 60 * 1000); // 2 dakika
 }
 
 function createBrowserTab(url, category = 'blue') {
