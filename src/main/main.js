@@ -2,6 +2,13 @@ const { app, BrowserWindow, BrowserView, ipcMain, Menu, Tray } = require('electr
 const path = require('path');
 const fs = require('fs');
 
+// Increase renderer process limit for 100-150+ browser views
+app.commandLine.appendSwitch('renderer-process-limit', '150');
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
+app.commandLine.appendSwitch('disable-background-timer-throttling');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
+
 let mainWindow;
 let tray;
 let isQuitting = false;
@@ -18,6 +25,9 @@ function createMainWindow() {
             nodeIntegration: false,
         }
     });
+
+    // Increase max listeners for 100-150+ browser views
+    mainWindow.setMaxListeners(200);
 
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
 
