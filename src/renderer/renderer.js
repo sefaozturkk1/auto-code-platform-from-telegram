@@ -22,7 +22,7 @@ const editSubmit = document.getElementById('edit-submit');
 const editCancel = document.getElementById('edit-cancel');
 
 let views = []; // { id, url, category, element }
-let selectedCategory = 'blue';
+let selectedCategory = 'jojobet';
 let editingViewId = null;
 
 // --- Category Selection in Create Modal ---
@@ -75,10 +75,11 @@ categoryButtons.forEach(btn => {
 });
 
 // --- Create View Placeholder with Category ---
-function createViewPlaceholder(id, url, category = 'blue') {
+function createViewPlaceholder(id, url, category = 'jojobet', colorCategory = 'blue') {
     const placeholder = document.createElement('div');
-    placeholder.className = `grid-placeholder category-${category}`;
+    placeholder.className = `grid-placeholder category-${colorCategory}`;
     placeholder.dataset.id = id;
+    placeholder.dataset.category = category; // Store site name for login matching
 
     const header = document.createElement('div');
     header.className = 'grid-header';
@@ -87,7 +88,7 @@ function createViewPlaceholder(id, url, category = 'blue') {
     titleContainer.className = 'header-title';
 
     const categoryIndicator = document.createElement('div');
-    categoryIndicator.className = `category-indicator ${category}`;
+    categoryIndicator.className = `category-indicator ${colorCategory}`;
 
     const title = document.createElement('span');
     try {
@@ -135,7 +136,7 @@ function createViewPlaceholder(id, url, category = 'blue') {
 
     gridContainer.appendChild(placeholder);
 
-    views.push({ id, url, category, element: placeholder });
+    views.push({ id, url, category, colorCategory, element: placeholder });
 
     // Wait for DOM layout to complete before calculating bounds
     requestAnimationFrame(() => {
@@ -188,11 +189,34 @@ editCancel.onclick = () => {
     updateGridStyles(); // Shows views
 };
 
-function toggleMaximize(id, element, btn) {
-    const isMaximized = element.classList.toggle('maximized');
-    btn.innerText = isMaximized ? 'KÜÇÜLT' : 'BÜYÜT';
+// Track currently maximized view
+let maximizedViewId = null;
 
-    gridContainer.style.overflowY = isMaximized ? 'hidden' : 'scroll';
+function toggleMaximize(id, element, btn) {
+    const wasMaximized = element.classList.contains('maximized');
+
+    // If clicking on an already maximized view, un-maximize it
+    if (wasMaximized) {
+        element.classList.remove('maximized');
+        btn.innerText = 'BÜYÜT';
+        maximizedViewId = null;
+        gridContainer.style.overflowY = 'scroll';
+    } else {
+        // Un-maximize any other maximized view first
+        views.forEach(v => {
+            if (v.element.classList.contains('maximized')) {
+                v.element.classList.remove('maximized');
+                const otherBtn = v.element.querySelector('.grid-maximize');
+                if (otherBtn) otherBtn.innerText = 'BÜYÜT';
+            }
+        });
+
+        // Maximize this view
+        element.classList.add('maximized');
+        btn.innerText = 'KÜÇÜLT';
+        maximizedViewId = id;
+        gridContainer.style.overflowY = 'hidden';
+    }
 
     updateGridStyles();
 }
@@ -213,6 +237,33 @@ function updateGridStyles() {
         return;
     }
 
+    // If a view is maximized, show only that view fullscreen and hide others
+    if (maximizedViewId) {
+        const boundsData = views.map(v => {
+            if (v.id === maximizedViewId) {
+                // Maximized view: full window below header
+                const headerHeight = 36; // grid-header height
+                return {
+                    id: v.id,
+                    bounds: {
+                        x: 0,
+                        y: headerHeight,
+                        width: Math.round(window.innerWidth),
+                        height: Math.round(window.innerHeight - headerHeight)
+                    }
+                };
+            } else {
+                // Hide all other views
+                return {
+                    id: v.id,
+                    bounds: { x: -9999, y: -9999, width: 0, height: 0 }
+                };
+            }
+        });
+        window.electronAPI.updateViewBounds(boundsData);
+        return;
+    }
+
     const containerRect = gridContainer.getBoundingClientRect();
     const cardHeaderHeight = 36;
 
@@ -224,23 +275,10 @@ function updateGridStyles() {
 
     const boundsData = views.map(v => {
         const rect = v.element.getBoundingClientRect();
-        const isMaximized = v.element.classList.contains('maximized');
 
         // Card content area (below the header bar)
         const cardContentY = rect.y + cardHeaderHeight;
         const cardContentHeight = rect.height - cardHeaderHeight;
-
-        if (isMaximized) {
-            return {
-                id: v.id,
-                bounds: {
-                    x: 0,
-                    y: minY, // Start from grid container top
-                    width: Math.round(window.innerWidth),
-                    height: Math.round(window.innerHeight - minY)
-                }
-            };
-        }
 
         // Clip to grid container
         let visibleTop = Math.max(cardContentY, minY);
@@ -292,14 +330,15 @@ function closeView(id) {
 }
 
 // --- Handle Tab Created with Category ---
-window.electronAPI.onTabCreatedWithCategory(({ id, category }) => {
+window.electronAPI.onTabCreatedWithCategory(({ id, category, colorCategory }) => {
     const url = createUrlInput.value.trim() || urlInput.value.trim();
-    createViewPlaceholder(id, url, category);
+    const color = colorCategory || SITE_TO_COLOR[category] || 'blue';
+    createViewPlaceholder(id, url, category, color);
 });
 
 // Legacy tab created (backwards compat)
 window.electronAPI.onTabCreated((id) => {
-    createViewPlaceholder(id, urlInput.value, 'blue');
+    createViewPlaceholder(id, urlInput.value, 'jojobet', 'blue');
 });
 
 // Value Sync Logic
@@ -412,5 +451,206 @@ window.electronAPI.onTelegramMessage((data) => {
 });
 
 window.onload = () => {
-    // App ready
+    // App ready - initialize account management
+    initAccountManagement();
 };
+
+// ============================================
+// ACCOUNT MANAGEMENT
+// ============================================
+
+// Site to category color mapping
+const SITE_TO_COLOR = {
+    jojobet: 'blue',
+    matbet: 'red',
+    holiganbet: 'yellow',
+    turboslot: 'black'
+};
+
+// Account Modal Elements
+const accountModal = document.getElementById('account-modal');
+const accountSettingsBtn = document.getElementById('account-settings-btn');
+const accountModalClose = document.getElementById('account-modal-close');
+const accountSiteSelect = document.getElementById('account-site-select');
+const accountUsernameInput = document.getElementById('account-username-input');
+const accountPasswordInput = document.getElementById('account-password-input');
+const addAccountBtn = document.getElementById('add-account-btn');
+const accountList = document.getElementById('account-list');
+
+// Gmail Elements
+const gmailEmailInput = document.getElementById('gmail-email-input');
+const gmailPasswordInput = document.getElementById('gmail-password-input');
+const saveGmailBtn = document.getElementById('save-gmail-btn');
+
+// Login Buttons
+const loginButtons = document.querySelectorAll('.login-btn');
+
+// Login Status Toast
+const loginStatusToast = document.getElementById('login-status-toast');
+const loginStatusText = document.getElementById('login-status-text');
+
+function initAccountManagement() {
+    // Account Settings Button
+    if (accountSettingsBtn) {
+        accountSettingsBtn.onclick = () => {
+            accountModal.style.display = 'flex';
+            loadAccounts();
+            loadGmailConfig();
+        };
+    }
+
+    // Close Modal
+    if (accountModalClose) {
+        accountModalClose.onclick = () => {
+            accountModal.style.display = 'none';
+        };
+    }
+
+    // Add Account
+    if (addAccountBtn) {
+        addAccountBtn.onclick = async () => {
+            const site = accountSiteSelect.value;
+            const username = accountUsernameInput.value.trim();
+            const password = accountPasswordInput.value.trim();
+
+            if (!username || !password) {
+                alert('Kullanıcı adı ve şifre zorunludur!');
+                return;
+            }
+
+            const result = await window.electronAPI.addAccount(site, username, password);
+            if (result.success) {
+                accountUsernameInput.value = '';
+                accountPasswordInput.value = '';
+                loadAccounts();
+                showToast('Hesap eklendi!', '#69db7c');
+            } else {
+                alert('Hesap eklenirken hata: ' + result.error);
+            }
+        };
+    }
+
+    // Save Gmail Config
+    if (saveGmailBtn) {
+        saveGmailBtn.onclick = async () => {
+            const email = gmailEmailInput.value.trim();
+            const appPassword = gmailPasswordInput.value.trim();
+
+            if (!email || !appPassword) {
+                alert('Gmail adresi ve App Password zorunludur!');
+                return;
+            }
+
+            const result = await window.electronAPI.setGmailConfig(email, appPassword);
+            if (result.success) {
+                showToast('Gmail ayarları kaydedildi!', '#69db7c');
+            } else {
+                alert('Gmail ayarları kaydedilirken hata: ' + result.error);
+            }
+        };
+    }
+
+    // Login Buttons
+    loginButtons.forEach(btn => {
+        btn.onclick = () => {
+            const category = btn.dataset.category;
+            console.log(`[LOGIN] Triggering auto-login for: ${category}`);
+            window.electronAPI.triggerAutoLogin(category);
+            showToast(`${category} için giriş başlatılıyor...`, '#8ab4f8');
+        };
+    });
+
+    // Listen for auto-login status updates
+    window.electronAPI.onAutoLoginStatus((data) => {
+        console.log('[LOGIN STATUS]', data);
+
+        const statusColors = {
+            started: '#8ab4f8',
+            step: '#fab005',
+            success: '#69db7c',
+            error: '#fa5252'
+        };
+
+        const color = statusColors[data.status] || '#fff';
+        showToast(data.message, color);
+    });
+}
+
+async function loadAccounts() {
+    const result = await window.electronAPI.getAllAccounts();
+
+    if (!result.success) {
+        accountList.innerHTML = '<p style="color: #fa5252;">Hesaplar yüklenirken hata oluştu</p>';
+        return;
+    }
+
+    const accounts = result.accounts;
+
+    if (accounts.length === 0) {
+        accountList.innerHTML = '<p style="color: #666; text-align: center;">Henüz hesap eklenmemiş</p>';
+        return;
+    }
+
+    // Group by site
+    const grouped = {};
+    accounts.forEach(acc => {
+        if (!grouped[acc.site]) grouped[acc.site] = [];
+        grouped[acc.site].push(acc);
+    });
+
+    let html = '';
+    for (const site in grouped) {
+        const color = SITE_TO_COLOR[site] || 'blue';
+        const siteEmoji = { jojobet: '🔵', matbet: '🔴', holiganbet: '🟡', turboslot: '⚫' }[site] || '⚪';
+
+        html += `<div style="margin-bottom: 10px;">
+            <h4 style="color: var(--${color}); margin: 5px 0; display: flex; align-items: center; gap: 5px;">
+                ${siteEmoji} ${site.charAt(0).toUpperCase() + site.slice(1)} (${grouped[site].length})
+            </h4>`;
+
+        grouped[site].forEach((acc, idx) => {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center; background: #2c2e33; padding: 8px 12px; border-radius: 4px; margin: 4px 0;">
+                <span style="color: #e8eaed;">${idx + 1}. ${acc.username}</span>
+                <button onclick="deleteAccount(${acc.id})" style="background: #fa5252; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px;">Sil</button>
+            </div>`;
+        });
+
+        html += '</div>';
+    }
+
+    accountList.innerHTML = html;
+}
+
+async function loadGmailConfig() {
+    const result = await window.electronAPI.getGmailConfig();
+    if (result.success && result.config) {
+        gmailEmailInput.value = result.config.email || '';
+        // Don't show password for security
+        gmailPasswordInput.placeholder = 'Mevcut şifre kaydedildi';
+    }
+}
+
+// Global function for delete button onclick
+window.deleteAccount = async function (id) {
+    if (!confirm('Bu hesabı silmek istediğinize emin misiniz?')) return;
+
+    const result = await window.electronAPI.deleteAccount(id);
+    if (result.success) {
+        loadAccounts();
+        showToast('Hesap silindi', '#fa5252');
+    } else {
+        alert('Hesap silinirken hata: ' + result.error);
+    }
+};
+
+function showToast(message, color = '#fff') {
+    loginStatusText.textContent = message;
+    loginStatusToast.style.borderLeft = `4px solid ${color}`;
+    loginStatusToast.style.display = 'block';
+
+    // Auto-hide after 3 seconds
+    clearTimeout(window.toastTimeout);
+    window.toastTimeout = setTimeout(() => {
+        loginStatusToast.style.display = 'none';
+    }, 3000);
+}

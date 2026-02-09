@@ -166,6 +166,58 @@
             background: #495057;
         }
 
+        .login-btn {
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #fff;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .login-btn.blue {
+            border-color: #4c6ef5;
+            color: #4c6ef5;
+        }
+
+        .login-btn.blue:hover {
+            background: #4c6ef5;
+            color: #fff;
+        }
+
+        .login-btn.red {
+            border-color: #fa5252;
+            color: #fa5252;
+        }
+
+        .login-btn.red:hover {
+            background: #fa5252;
+            color: #fff;
+        }
+
+        .login-btn.yellow {
+            border-color: #fab005;
+            color: #fab005;
+        }
+
+        .login-btn.yellow:hover {
+            background: #fab005;
+            color: #000;
+        }
+
+        .login-btn.black {
+            border-color: #495057;
+            color: #adb5bd;
+        }
+
+        .login-btn.black:hover {
+            background: #495057;
+            color: #fff;
+        }
+
         #sync-area {
             background: #1a1b1e;
             padding: 15px;
@@ -557,11 +609,23 @@
                 <span class="category-label">Kategoriye Link Aç:</span>
                 <input type="text" id="category-url-input" placeholder="URL yapıştır...">
                 <div class="category-buttons">
-                    <button class="category-open-btn blue" data-category="blue">🔵 Mavi</button>
-                    <button class="category-open-btn red" data-category="red">🔴 Kırmızı</button>
-                    <button class="category-open-btn yellow" data-category="yellow">🟡 Sarı</button>
-                    <button class="category-open-btn black" data-category="black">⚫ Siyah</button>
+                    <button class="category-open-btn blue" data-category="jojobet">🔵 Jojobet</button>
+                    <button class="category-open-btn red" data-category="matbet">🔴 Matbet</button>
+                    <button class="category-open-btn yellow" data-category="holiganbet">🟡 Holiganbet</button>
+                    <button class="category-open-btn black" data-category="turboslot">⚫ Turboslot</button>
                 </div>
+            </div>
+            <div class="category-row" style="margin-top: 8px;">
+                <span class="category-label">Otomatik Giriş:</span>
+                <div class="category-buttons">
+                    <button class="login-btn blue" data-category="jojobet">🔐 Jojobet Giriş</button>
+                    <button class="login-btn red" data-category="matbet">🔐 Matbet Giriş</button>
+                    <button class="login-btn yellow" data-category="holiganbet">🔐 Holiganbet Giriş</button>
+                    <button class="login-btn black" data-category="turboslot">🔐 Turboslot Giriş</button>
+                </div>
+                <button id="account-settings-btn"
+                    style="background: #69db7c; color: #000; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-left: 10px;">⚙️
+                    Hesap Ayarları</button>
             </div>
         </div>
 
@@ -589,16 +653,16 @@
                 <div class="input-group">
                     <label>Kategori</label>
                     <div class="category-selector">
-                        <div class="category-option blue selected" data-category="blue">
+                        <div class="category-option blue selected" data-category="jojobet">
                             <span class="check-icon">✓</span>
                         </div>
-                        <div class="category-option red" data-category="red">
+                        <div class="category-option red" data-category="matbet">
                             <span class="check-icon">✓</span>
                         </div>
-                        <div class="category-option yellow" data-category="yellow">
+                        <div class="category-option yellow" data-category="holiganbet">
                             <span class="check-icon">✓</span>
                         </div>
-                        <div class="category-option black" data-category="black">
+                        <div class="category-option black" data-category="turboslot">
                             <span class="check-icon">✓</span>
                         </div>
                     </div>
@@ -655,6 +719,74 @@
                     <button id="modal-submit" class="modal-btn primary">Continue</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Account Settings Modal -->
+        <div id="account-modal" class="modal-overlay">
+            <div class="modal-content" style="width: 600px; max-height: 80vh; overflow-y: auto;">
+                <h2>⚙️ Hesap Yönetimi</h2>
+
+                <!-- Add Account Form -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h3 style="margin: 0 0 10px 0; color: #8ab4f8; font-size: 14px;">➕ Yeni Hesap Ekle</h3>
+                    <div class="input-group">
+                        <label>Site</label>
+                        <select id="account-site-select" class="modal-input" style="cursor: pointer;">
+                            <option value="jojobet">🔵 Jojobet</option>
+                            <option value="matbet">🔴 Matbet</option>
+                            <option value="holiganbet">🟡 Holiganbet</option>
+                            <option value="turboslot">⚫ Turboslot</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" id="account-username-input" class="modal-input" placeholder="Kullanıcı adı">
+                    </div>
+                    <div class="input-group">
+                        <label>Şifre</label>
+                        <input type="password" id="account-password-input" class="modal-input" placeholder="Şifre">
+                    </div>
+                    <button id="add-account-btn" class="modal-btn primary" style="width: 100%; margin-top: 10px;">Hesap
+                        Ekle</button>
+                </div>
+
+                <!-- Gmail Settings -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h3 style="margin: 0 0 10px 0; color: #69db7c; font-size: 14px;">📧 Gmail Ayarları (SMS Kodu İçin)
+                    </h3>
+                    <div class="input-group">
+                        <label>Gmail Adresi</label>
+                        <input type="email" id="gmail-email-input" class="modal-input" placeholder="ornek@gmail.com">
+                    </div>
+                    <div class="input-group">
+                        <label>App Password</label>
+                        <input type="password" id="gmail-password-input" class="modal-input"
+                            placeholder="16 haneli app password">
+                    </div>
+                    <button id="save-gmail-btn" class="modal-btn primary"
+                        style="width: 100%; margin-top: 10px; background: #69db7c; color: #000;">Gmail Ayarlarını
+                        Kaydet</button>
+                </div>
+
+                <!-- Account List -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px;">
+                    <h3 style="margin: 0 0 10px 0; color: #fab005; font-size: 14px;">📋 Kayıtlı Hesaplar</h3>
+                    <div id="account-list" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Accounts will be populated here -->
+                        <p style="color: #666; text-align: center;">Yükleniyor...</p>
+                    </div>
+                </div>
+
+                <div class="modal-buttons" style="margin-top: 15px;">
+                    <button id="account-modal-close" class="modal-btn secondary" style="width: 100%;">Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Status Toast -->
+        <div id="login-status-toast"
+            style="position: fixed; bottom: 20px; right: 20px; background: #25262b; color: #fff; padding: 15px 20px; border-radius: 8px; display: none; z-index: 2000; max-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <div id="login-status-text">Giriş durumu...</div>
         </div>
     </div>
     <script src="renderer.js"></script>

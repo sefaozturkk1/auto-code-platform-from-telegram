@@ -1,18 +1,106 @@
+console.log('[STARTUP] Application starting...');
+
 const { app, BrowserWindow, BrowserView, ipcMain, Menu, Tray } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+// Telegram modules - will be loaded inside startTelegramBot after app is ready
+let TelegramClient, Api, StringSession, NewMessage;
+
+// Database and Gmail modules
+console.log('[STARTUP] Loading database and gmail modules...');
+let db, gmail;
+
+try {
+    db = require('./database');
+    console.log('[STARTUP] Database module loaded.');
+} catch (e) {
+    console.error('[STARTUP] Failed to load database module:', e);
+}
+
+// db = null; // Disable DB for now
+
+try {
+    gmail = require('./gmail');
+    console.log('[STARTUP] Gmail module loaded.');
+} catch (e) {
+    console.error('[STARTUP] Failed to load Gmail module:', e);
+}
+
+// gmail = null; // Disable Gmail for now
+
+console.log('[STARTUP] Modules processing complete. Determining categories...');
+
+// Site to color category mapping
+const SITE_CATEGORIES = {
+    jojobet: 'blue',
+    matbet: 'red',
+    holiganbet: 'yellow',
+    turboslot: 'black'
+};
+
+// View to account assignment tracking
+const viewAccountMap = new Map(); // viewId -> accountId
+
 // Increase renderer process limit for 100-150+ browser views
-app.commandLine.appendSwitch('renderer-process-limit', '150');
-app.commandLine.appendSwitch('disable-renderer-backgrounding');
-app.commandLine.appendSwitch('disable-background-timer-throttling');
-app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
-app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
+// Increase renderer process limit for 100-150+ browser views
+// app.commandLine.appendSwitch('renderer-process-limit', '150');
+// app.commandLine.appendSwitch('disable-renderer-backgrounding');
+// app.commandLine.appendSwitch('disable-background-timer-throttling');
+// app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+// app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
+// app.commandLine.appendSwitch('disable-site-isolation-trials');
+// app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
+// Anti-bot important flags - REMOVED
+// app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled');
+
+// Diverse User-Agents to bypass Cloudflare bot detection
+const USER_AGENTS = [
+    // Chrome Windows
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+    // Chrome Mac
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+    // Firefox Windows
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0',
+    // Firefox Mac
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:121.0) Gecko/20100101 Firefox/121.0',
+    // Safari Mac
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Safari/605.1.15',
+    // Edge Windows
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
+    // Mobile User Agents
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36',
+    'Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36',
+];
+
+let userAgentIndex = 0;
+function getNextUserAgent() {
+    const ua = USER_AGENTS[userAgentIndex % USER_AGENTS.length];
+    userAgentIndex++;
+    return ua;
+}
+
+// Proxy configuration (set your proxies here)
+// Format: { host: 'proxy.example.com', port: 8080, username: 'user', password: 'pass' }
+let PROXY_LIST = [];
+let proxyIndex = 0;
+function getNextProxy() {
+    if (PROXY_LIST.length === 0) return null;
+    const proxy = PROXY_LIST[proxyIndex % PROXY_LIST.length];
+    proxyIndex++;
+    return proxy;
+}
 
 let mainWindow;
 let tray;
 let isQuitting = false;
-const views = new Map(); // id -> { view: BrowserView, category: string }
+const views = new Map(); // id -> { view: BrowserView, category: string, userAgent: string }
 
 function createMainWindow() {
     mainWindow = new BrowserWindow({
@@ -239,35 +327,58 @@ function startAntiIdle() {
     }, 10 * 60 * 1000); // 10 dakika
 }
 
-function createBrowserTab(url, category = 'blue') {
+function createBrowserTab(url, category = 'jojobet') {
     const id = Date.now().toString();
     const partition = `persist:account_${id}`;
+
+    // Legacy mapping for UI compatibility
+    const colorCategory = SITE_CATEGORIES[category] || 'blue';
 
     const view = new BrowserView({
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
-            partition: partition // Session isolation fix
+            partition: partition,
+            preload: path.join(__dirname, '../preload/preload.js')
         }
     });
 
     // Start off-screen until renderer calculates correct position
     view.setBounds({ x: -9999, y: -9999, width: 0, height: 0 });
 
-    views.set(id, { view, category });
+    // Store view data
+    // Note: The old code didn't store 'userAgent' or use 'colorCategory' in the same way, 
+    // but we need 'colorCategory' for the UI to work properly with the new renderer.
+    views.set(id, { view, category, colorCategory });
     mainWindow.addBrowserView(view);
     view.webContents.loadURL(url);
 
     updateGridLayout();
 
-    return { id, category };
+    return { id, category, colorCategory };
 }
 
 function updateGridLayout() {
     // Legacy function - positions are now managed via update-view-bounds
 }
 
+console.log('[STARTUP] Waiting for app.whenReady...');
+
 app.whenReady().then(() => {
+    console.log('[STARTUP] App is ready.');
+
+    // Initialize database
+    if (db) {
+        try {
+            db.initDatabase();
+            console.log('[APP] Database initialized');
+        } catch (e) {
+            console.error('[STARTUP] Database initialization failed:', e);
+        }
+    } else {
+        console.error('[STARTUP] Database module not available, skipping initialization.');
+    }
+
     createMainWindow();
     try {
         createTray();
@@ -308,7 +419,11 @@ ipcMain.on('new-tab', (event, url) => {
 // NEW: Create tab with category
 ipcMain.on('new-tab-with-category', (event, { url, category }) => {
     const result = createBrowserTab(url, category);
-    event.reply('tab-created-with-category', { id: result.id, category: result.category });
+    event.reply('tab-created-with-category', {
+        id: result.id,
+        category: result.category,
+        colorCategory: result.colorCategory
+    });
 });
 
 ipcMain.on('update-view-bounds', (event, boundsList) => {
@@ -378,11 +493,26 @@ ipcMain.on('navigate-category', (event, { category, url }) => {
         }
     });
 });
-// Telegram Integration (GramJS)
-const { TelegramClient, Api } = require('telegram');
-const { StringSession } = require('telegram/sessions');
-const { NewMessage } = require('telegram/events');
 
+// NEW: Set proxy list
+ipcMain.on('set-proxy-list', (event, proxies) => {
+    // proxies should be array of { host, port, username?, password? }
+    PROXY_LIST = proxies;
+    console.log(`[PROXY] Proxy list updated with ${proxies.length} proxies`);
+});
+
+// NEW: Get current view count and info
+ipcMain.handle('get-view-info', () => {
+    const info = [];
+    views.forEach((viewData, id) => {
+        info.push({
+            id,
+            category: viewData.category,
+            userAgent: viewData.userAgent?.substring(0, 50) + '...'
+        });
+    });
+    return info;
+});
 // --- USER CONFIGURATION ---
 const apiId = 10637839; // Replace with your API ID (Integer)
 const apiHash = 'c1a267916b74fe6ffe2d0d81b823acf2'; // Replace with your API Hash (String)
@@ -461,6 +591,25 @@ async function processMessage(message) {
 }
 
 async function startTelegramBot() {
+    // Load Telegram modules with a small delay to ensure main window is ready
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    console.log('[TELEGRAM] Loading Telegram modules...');
+    try {
+        const tg = require('telegram');
+        const tgSessions = require('telegram/sessions');
+        const tgEvents = require('telegram/events');
+
+        TelegramClient = tg.TelegramClient;
+        Api = tg.Api;
+        StringSession = tgSessions.StringSession;
+        NewMessage = tgEvents.NewMessage;
+        console.log('[TELEGRAM] Telegram modules loaded successfully.');
+    } catch (e) {
+        console.error('[TELEGRAM] Failed to load Telegram modules:', e);
+        return;
+    }
+
     SESSION_FILE_PATH = path.join(app.getPath('userData'), 'telegram_session.txt');
 
     let sessionString = "";
@@ -469,11 +618,11 @@ async function startTelegramBot() {
         console.log("Existing session found and loaded.");
     }
 
-    stringSession = new StringSession(sessionString);
+    const localStringSession = new StringSession(sessionString);
 
     try {
         console.log("Loading Telegram client...");
-        client = new TelegramClient(stringSession, apiId, apiHash, {
+        client = new TelegramClient(localStringSession, apiId, apiHash, {
             connectionRetries: 5,
         });
 
@@ -557,4 +706,409 @@ async function startTelegramBot() {
 
 ipcMain.on('switch-tab', (event, id) => {
     // In grid mode, we don't switch, but we could highlight the selected one
+});
+
+// ============================================
+// ACCOUNT MANAGEMENT IPC HANDLERS
+// ============================================
+
+ipcMain.handle('add-account', async (event, { site, username, password }) => {
+    try {
+        const id = db.addAccount(site, username, password);
+        return { success: true, id };
+    } catch (err) {
+        console.error('[IPC] add-account error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('get-accounts', async (event, site) => {
+    try {
+        const accounts = db.getAccountsBySite(site);
+        return { success: true, accounts };
+    } catch (err) {
+        console.error('[IPC] get-accounts error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('get-all-accounts', async () => {
+    try {
+        const accounts = db.getAllAccounts();
+        return { success: true, accounts };
+    } catch (err) {
+        console.error('[IPC] get-all-accounts error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('delete-account', async (event, id) => {
+    try {
+        const success = db.deleteAccount(id);
+        return { success };
+    } catch (err) {
+        console.error('[IPC] delete-account error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+// ============================================
+// GMAIL CONFIG IPC HANDLERS
+// ============================================
+
+ipcMain.handle('set-gmail-config', async (event, { email, appPassword }) => {
+    try {
+        db.setGmailConfig(email, appPassword);
+        return { success: true };
+    } catch (err) {
+        console.error('[IPC] set-gmail-config error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('get-gmail-config', async () => {
+    try {
+        const config = db.getGmailConfig();
+        return { success: true, config };
+    } catch (err) {
+        console.error('[IPC] get-gmail-config error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+// ============================================
+// AUTO-LOGIN FUNCTIONALITY
+// ============================================
+
+async function performAutoLogin(viewId, account) {
+    const viewData = views.get(viewId);
+    if (!viewData) {
+        console.error(`[AUTO-LOGIN] View ${viewId} not found`);
+        return { success: false, error: 'View not found' };
+    }
+
+    const webContents = viewData.view.webContents;
+
+    const sendStatus = (status, message) => {
+        if (mainWindow) {
+            mainWindow.webContents.send('auto-login-status', { viewId, status, message });
+        }
+    };
+
+    try {
+        sendStatus('started', `Giriş başlatılıyor: ${account.username}`);
+
+        // Step 1: Click login button
+        sendStatus('step', 'Login butonuna tıklanıyor...');
+        await webContents.executeJavaScript(`
+            (function() {
+                const loginBtn = document.querySelector('.ButtonLogin .AnchorText, .ButtonLogin, [class*="login"], a[href*="login"]');
+                if (loginBtn) {
+                    loginBtn.click();
+                    return true;
+                }
+                return false;
+            })();
+        `);
+        await new Promise(r => setTimeout(r, 2000));
+
+        // Step 2: Enter username
+        sendStatus('step', 'Kullanıcı adı giriliyor...');
+        await webContents.executeJavaScript(`
+            (function() {
+                const usernameInput = document.querySelector('.cs-user-Id, input[name="username"], input[type="text"][placeholder*="kullanıcı"]');
+                if (usernameInput) {
+                    usernameInput.value = '${account.username}';
+                    usernameInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    usernameInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    return true;
+                }
+                return false;
+            })();
+        `);
+        await new Promise(r => setTimeout(r, 500));
+
+        // Step 3: Enter password
+        sendStatus('step', 'Şifre giriliyor...');
+        await webContents.executeJavaScript(`
+            (function() {
+                const passwordInput = document.querySelector('.cs-password, input[type="password"]');
+                if (passwordInput) {
+                    passwordInput.value = '${account.password}';
+                    passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    passwordInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    return true;
+                }
+                return false;
+            })();
+        `);
+        await new Promise(r => setTimeout(r, 500));
+
+        // NEW STEP ORDER: Click "Giriş Yap" (Submit) button immediately after password
+        sendStatus('step', 'Giriş yapılıyor (2FA ekranı bekleniyor)...');
+        await webContents.executeJavaScript(`
+            (function() {
+                console.log('[AUTO-LOGIN] Looking for submit button...');
+                
+                // Specific ID provided by user
+                const specificBtn = document.getElementById('LoginButton-Url');
+                if (specificBtn) {
+                     console.log('[AUTO-LOGIN] Clicking specific button #LoginButton-Url:', specificBtn);
+                     specificBtn.click();
+                     return true;
+                }
+
+                // Try various submit button selectors
+                let submitBtn = document.getElementById('LoginButton-Url') || 
+                               document.querySelector('button[type="submit"], .btn-login, .login-btn, input[type="submit"], .ButtonLogin, [id*="LoginButton"]');
+                
+                if (!submitBtn) {
+                    // Search by text content as fallback
+                    const buttons = Array.from(document.querySelectorAll('button, input[type="button"], input[type="submit"]'));
+                    submitBtn = buttons.find(b => b.innerText.includes('Giriş') || b.value?.includes('Giriş'));
+                }
+
+                if (submitBtn) {
+                    console.log('[AUTO-LOGIN] Clicking submit button:', submitBtn);
+                    submitBtn.click();
+                    return true;
+                }
+                
+                return false;
+            })();
+        `);
+        await new Promise(r => setTimeout(r, 4000)); // Wait for 2FA screen to load
+
+        // Step 4: Click "E-posta kodu" button (Find by text content)
+        sendStatus('step', 'E-posta seçeneği aranıyor...');
+        await webContents.executeJavaScript(`
+            (function() {
+                // Find all RadioBtn elements
+                const radios = document.querySelectorAll('.RadioBtn');
+                for (const radio of radios) {
+                    if (radio.innerText.includes('E-posta') || radio.innerText.includes('E-Posta') || radio.innerText.includes('Email')) {
+                        console.log('[AUTO-LOGIN] Found Email radio button:', radio);
+                        radio.click();
+                        return true;
+                    }
+                }
+                
+                // Fallback: Click the second radio button if 2 exist (usually SMS is first, Email second)
+                if (radios.length >= 2) {
+                    console.log('[AUTO-LOGIN] Clicking second radio button as fallback');
+                    radios[1].click();
+                    return true;
+                }
+                
+                console.log('[AUTO-LOGIN] No radio buttons found (Maybe already on code screen?)');
+                return false;
+            })();
+        `);
+        await new Promise(r => setTimeout(r, 1000));
+
+        // NEW STEP: Click "E-posta kodu gönder" (TwoFaSendCodeBtn)
+        sendStatus('step', 'Kod gönder butonuna tıklanıyor...');
+        await webContents.executeJavaScript(`
+            (function() {
+                const sendBtn = document.querySelector('.TwoFaSendCodeBtn');
+                if (sendBtn) {
+                    console.log('[AUTO-LOGIN] Clicking TwoFaSendCodeBtn:', sendBtn);
+                    sendBtn.click();
+                    return true;
+                }
+                console.log('[AUTO-LOGIN] TwoFaSendCodeBtn not found');
+                return false;
+            })();
+        `);
+
+        await new Promise(r => setTimeout(r, 3000)); // Wait for code to be sent/page update
+
+        // Step 5: Wait for email code from Gmail
+        sendStatus('step', 'Gmail\'den kod bekleniyor...');
+        const gmailConfig = db.getGmailConfig();
+        if (!gmailConfig) {
+            sendStatus('error', 'Gmail ayarları bulunamadı!');
+            return { success: false, error: 'Gmail config not found' };
+        }
+
+        const code = await gmail.waitForVerificationCode(
+            gmailConfig.email,
+            gmailConfig.app_password,
+            30, // max attempts
+            2000 // interval ms
+        );
+
+        if (!code) {
+            sendStatus('error', 'Doğrulama kodu alınamadı!');
+            return { success: false, error: 'Verification code not received' };
+        }
+
+        sendStatus('step', `Kod alındı: ${code} `);
+
+        // Step 6: Enter verification code (Simulate Typing)
+        sendStatus('step', 'Kod giriliyor (Tek tek yazılıyor)...');
+        // Step 6: Enter verification code (Simulate Typing)
+        sendStatus('step', 'Kod giriliyor (Tek tek yazılıyor)...');
+        await webContents.executeJavaScript(`
+            (function() {
+                // User provided specific classes: CodeInput cs-sms-otp
+                const codeInput = document.querySelector('.CodeInput, .cs-sms-otp, input[name="code"], input[type="text"][placeholder*="kod"]');
+                if (codeInput) {
+                    console.log('[AUTO-LOGIN] Found code input:', codeInput);
+                    codeInput.focus();
+                    const code = '${code}';
+                    
+                    // Clear existing
+                    codeInput.value = '';
+                    
+                    // Simulate typing
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+                    
+                    if (nativeInputValueSetter) {
+                        nativeInputValueSetter.call(codeInput, code);
+                    } else {
+                        codeInput.value = code;
+                    }
+                    
+                    codeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    codeInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    // Also try dispatching key events for safety
+                    const keyEvent = new KeyboardEvent('keyup', {
+                        bubbles: true, cancelable: true, key: code[code.length-1], char: code[code.length-1]
+                    });
+                    codeInput.dispatchEvent(keyEvent);
+                    
+                    return true;
+                }
+                console.log('[AUTO-LOGIN] Code input NOT found');
+                return false;
+            })();
+        `);
+        await new Promise(r => setTimeout(r, 500));
+
+        // Step 7: Click verify button
+        sendStatus('step', 'Doğrula butonuna tıklanıyor...');
+        await webContents.executeJavaScript(`
+            (function () {
+                console.log('[AUTO-LOGIN] Attempting to click verify button...');
+                
+                // User provided specific class: TwoFaValidateBtn
+                let verifyBtn = document.querySelector('.TwoFaValidateBtn');
+                
+                if (!verifyBtn) {
+                    // Try other common selectors
+                    verifyBtn = document.querySelector('button[type="submit"], .verify-btn, .btn-verify, .TwoFaSubmitBtn');
+                }
+                
+                if (!verifyBtn) {
+                    // Search by text content (Doğrula / Onayla)
+                    const buttons = Array.from(document.querySelectorAll('button, input[type="button"], input[type="submit"]'));
+                    verifyBtn = buttons.find(b => {
+                        const txt = (b.innerText || b.value || "").toLowerCase();
+                        return txt.includes('doğrula') || txt.includes('onayla') || txt.includes('verify') || txt.includes('confirm');
+                    });
+                }
+                
+                if (verifyBtn) {
+                    console.log('[AUTO-LOGIN] Found verify button:', verifyBtn);
+                    verifyBtn.scrollIntoView();
+                    verifyBtn.click();
+                    return true;
+                }
+                
+                // Final fallback: click any submit button in the active form
+                const submitBtn = document.querySelector('button[type="submit"], input[type="submit"]');
+                if (submitBtn) {
+                    console.log('[AUTO-LOGIN] Falling back to generic submit button');
+                    submitBtn.click();
+                    return true;
+                }
+                
+                console.log('[AUTO-LOGIN] Verify button NOT found in any form');
+                return false;
+            })();
+        `);
+
+        sendStatus('success', 'Giriş tamamlandı!');
+        return { success: true };
+
+    } catch (err) {
+        console.error(`[AUTO - LOGIN] Error for view ${viewId}: `, err);
+        sendStatus('error', `Hata: ${err.message} `);
+        return { success: false, error: err.message };
+    }
+}
+
+// Lock to prevent concurrent auto-login triggers for the same category
+const autoLoginLocks = new Set();
+
+ipcMain.on('trigger-auto-login', async (event, category) => {
+    if (autoLoginLocks.has(category)) {
+        console.log(`[AUTO-LOGIN] Already running for category ${category}. Ignoring.`);
+        return;
+    }
+
+    autoLoginLocks.add(category);
+    console.log(`[AUTO-LOGIN] Triggered sequentially for category: ${category}`);
+
+    try {
+        // Get accounts for this category (site)
+        const accounts = db.getAccountsBySite(category);
+        console.log(`[AUTO-LOGIN] Found ${accounts.length} accounts for ${category}`);
+
+        if (accounts.length === 0) {
+            if (mainWindow) {
+                mainWindow.webContents.send('auto-login-status', {
+                    status: 'error',
+                    message: `${category} için kayıtlı hesap bulunamadı!`
+                });
+            }
+            return;
+        }
+
+        // Get views for this category
+        const categoryViews = [];
+        views.forEach((viewData, viewId) => {
+            // Map site names to color categories
+            const colorCategory = SITE_CATEGORIES[category] || category;
+            if (viewData.category === colorCategory || viewData.category === category) {
+                categoryViews.push({ viewId, viewData });
+            }
+        });
+
+        console.log(`[AUTO-LOGIN] Found ${categoryViews.length} views for category ${category}. Processing sequentially.`);
+
+        if (categoryViews.length === 0) {
+            if (mainWindow) {
+                mainWindow.webContents.send('auto-login-status', {
+                    status: 'error',
+                    message: `${category} kategorisinde açık sayfa yok!`
+                });
+            }
+            return;
+        }
+
+        // Assign accounts to views and log in SEQUENTIALLY
+        const numToProcess = Math.min(categoryViews.length, accounts.length);
+        for (let i = 0; i < numToProcess; i++) {
+            const { viewId } = categoryViews[i];
+            const account = accounts[i];
+
+            viewAccountMap.set(viewId, account.id);
+            console.log(`[AUTO-LOGIN] Starting login ${i + 1}/${numToProcess}: Account ${account.username} on view ${viewId}`);
+
+            // Perform login one by one to avoid Gmail 2FA conflicts
+            await performAutoLogin(viewId, account);
+
+            console.log(`[AUTO-LOGIN] Finished login ${i + 1}/${numToProcess} for account ${account.username}`);
+
+            // Optional: small delay between accounts to let things settle
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    } catch (err) {
+        console.error('[AUTO-LOGIN] Trigger error:', err);
+    } finally {
+        autoLoginLocks.delete(category);
+    }
 });
