@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Grid Sync Injector</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1b1e;
+            color: #e8eaed;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        #header {
+            background: #25262b;
+            padding: 15px;
+            border-bottom: 2px solid #2c2e33;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            -webkit-app-region: drag;
+        }
+
+        #address-bar {
+            display: flex;
+            gap: 10px;
+            -webkit-app-region: no-drag;
+            align-items: center;
+        }
+
+        #app-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #8ab4f8;
+            margin-right: 15px;
+        }
+
+        #url-input {
+            flex: 1;
+            background: #2c2e33;
+            border: 1px solid #373a40;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #url-input:focus {
+            border-color: #8ab4f8;
+        }
+
+        #new-tab-btn {
+            background: #4c6ef5;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        #new-tab-btn:hover {
+            background: #5c7cfa;
+        }
+
+        /* Category Section */
+        #category-section {
+            background: #1f2023;
+            padding: 12px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-bottom: 1px solid #2c2e33;
+            -webkit-app-region: no-drag;
+        }
+
+        .category-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-label {
+            font-size: 11px;
+            color: #909296;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 120px;
+        }
+
+        #category-url-input {
+            flex: 1;
+            background: #2c2e33;
+            border: 1px solid #373a40;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        #category-url-input:focus {
+            border-color: #8ab4f8;
+        }
+
+        .category-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .category-open-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .category-open-btn.blue {
+            background: #4c6ef5;
+        }
+
+        .category-open-btn.blue:hover {
+            background: #5c7cfa;
+        }
+
+        .category-open-btn.red {
+            background: #fa5252;
+        }
+
+        .category-open-btn.red:hover {
+            background: #ff6b6b;
+        }
+
+        .category-open-btn.yellow {
+            background: #fab005;
+        }
+
+        .category-open-btn.yellow:hover {
+            background: #fcc419;
+        }
+
+        .category-open-btn.black {
+            background: #343a40;
+            border: 1px solid #495057;
+        }
+
+        .category-open-btn.black:hover {
+            background: #495057;
+        }
+
+        /* Bulk Open Buttons */
+        .category-bulk-open-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #fff;
+            transition: all 0.2s;
+        }
+
+        .category-bulk-open-btn.blue {
+            background: linear-gradient(135deg, #4c6ef5 0%, #364fc7 100%);
+        }
+
+        .category-bulk-open-btn.blue:hover {
+            background: linear-gradient(135deg, #5c7cfa 0%, #4c6ef5 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 110, 245, 0.4);
+        }
+
+        .category-bulk-open-btn.red {
+            background: linear-gradient(135deg, #fa5252 0%, #e03131 100%);
+        }
+
+        .category-bulk-open-btn.red:hover {
+            background: linear-gradient(135deg, #ff6b6b 0%, #fa5252 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(250, 82, 82, 0.4);
+        }
+
+        .category-bulk-open-btn.yellow {
+            background: linear-gradient(135deg, #fab005 0%, #f08c00 100%);
+        }
+
+        .category-bulk-open-btn.yellow:hover {
+            background: linear-gradient(135deg, #fcc419 0%, #fab005 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(250, 176, 5, 0.4);
+        }
+
+        .category-bulk-open-btn.black {
+            background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+            border: 1px solid #495057;
+        }
+
+        .category-bulk-open-btn.black:hover {
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(73, 80, 87, 0.4);
+        }
+
+        .login-btn {
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            color: #fff;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .login-btn.blue {
+            border-color: #4c6ef5;
+            color: #4c6ef5;
+        }
+
+        .login-btn.blue:hover {
+            background: #4c6ef5;
+            color: #fff;
+        }
+
+        .login-btn.red {
+            border-color: #fa5252;
+            color: #fa5252;
+        }
+
+        .login-btn.red:hover {
+            background: #fa5252;
+            color: #fff;
+        }
+
+        .login-btn.yellow {
+            border-color: #fab005;
+            color: #fab005;
+        }
+
+        .login-btn.yellow:hover {
+            background: #fab005;
+            color: #000;
+        }
+
+        .login-btn.black {
+            border-color: #495057;
+            color: #adb5bd;
+        }
+
+        .login-btn.black:hover {
+            background: #495057;
+            color: #fff;
+        }
+
+        #sync-area {
+            background: #1a1b1e;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid #2c2e33;
+            -webkit-app-region: no-drag;
+        }
+
+        #sync-input {
+            flex: 1;
+            background: #2c2e33;
+            border: 1px solid #373a40;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #sync-input:focus {
+            border-color: #8ab4f8;
+            background: #32353b;
+        }
+
+        .sync-label {
+            font-size: 12px;
+            color: #a6a7ab;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Styled Scrollbar */
+        #grid-container::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        #grid-container::-webkit-scrollbar-track {
+            background: #1a1b1e;
+        }
+
+        #grid-container::-webkit-scrollbar-thumb {
+            background: #373a40;
+            border-radius: 10px;
+            border: 3px solid #1a1b1e;
+        }
+
+        #grid-container::-webkit-scrollbar-thumb:hover {
+            background: #4c6ef5;
+        }
+
+        #grid-container {
+            flex: 1;
+            position: relative;
+            background: #141517;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
+            grid-auto-rows: 450px;
+            gap: 20px;
+            padding: 20px;
+            align-content: start;
+            z-index: 1;
+        }
+
+        .grid-placeholder {
+            border: 3px solid #2c2e33;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            background: #1a1b1e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        /* Category border colors */
+        .grid-placeholder.category-blue {
+            border-color: #4c6ef5;
+        }
+
+        .grid-placeholder.category-red {
+            border-color: #fa5252;
+        }
+
+        .grid-placeholder.category-yellow {
+            border-color: #fab005;
+        }
+
+        .grid-placeholder.category-black {
+            border-color: #495057;
+        }
+
+        .grid-placeholder.maximized {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            border-radius: 0;
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .grid-placeholder:hover {
+            box-shadow: 0 0 20px rgba(76, 110, 245, 0.3);
+        }
+
+        .grid-header {
+            height: 36px;
+            background: #25262b;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 13px;
+            color: #e8eaed;
+            width: 100%;
+            border-bottom: 2px solid #2c2e33;
+            justify-content: space-between;
+            box-sizing: border-box;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-title span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .category-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .category-indicator.blue {
+            background: #4c6ef5;
+        }
+
+        .category-indicator.red {
+            background: #fa5252;
+        }
+
+        .category-indicator.yellow {
+            background: #fab005;
+        }
+
+        .category-indicator.black {
+            background: #495057;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .grid-edit {
+            cursor: pointer;
+            color: #69db7c;
+            font-weight: bold;
+            font-size: 11px;
+            user-select: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #2c2e33;
+        }
+
+        .grid-edit:hover {
+            background: #373a40;
+        }
+
+        .grid-maximize {
+            cursor: pointer;
+            color: #8ab4f8;
+            font-weight: bold;
+            font-size: 12px;
+            user-select: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #2c2e33;
+        }
+
+        .grid-maximize:hover {
+            background: #373a40;
+        }
+
+        .grid-close {
+            cursor: pointer;
+            color: #fa5252;
+            font-weight: bold;
+            font-size: 18px;
+            user-select: none;
+            line-height: 1;
+        }
+
+        .grid-close:hover {
+            color: #ff6b6b;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #25262b;
+            padding: 30px;
+            border-radius: 12px;
+            width: 420px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #373a40;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-content h2 {
+            margin: 0;
+            color: #8ab4f8;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .modal-content p {
+            margin: 0;
+            font-size: 14px;
+            color: #a6a7ab;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #909296;
+            font-weight: 600;
+        }
+
+        .modal-input {
+            background: #1a1b1e;
+            border: 1px solid #373a40;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .modal-input:focus {
+            border-color: #8ab4f8;
+        }
+
+        /* Category selector */
+        .category-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .category-option {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-option.blue {
+            background: #4c6ef5;
+        }
+
+        .category-option.red {
+            background: #fa5252;
+        }
+
+        .category-option.yellow {
+            background: #fab005;
+        }
+
+        .category-option.black {
+            background: #343a40;
+            border: 3px solid #495057;
+        }
+
+        .category-option:hover {
+            transform: scale(1.1);
+        }
+
+        .category-option.selected {
+            border-color: #fff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+        }
+
+        .category-option .check-icon {
+            display: none;
+            font-size: 24px;
+            color: #fff;
+        }
+
+        .category-option.selected .check-icon {
+            display: block;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: #4c6ef5;
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: #373a40;
+            color: #e8eaed;
+        }
+
+        .modal-btn:hover {
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div id="header">
+            <div id="address-bar">
+                <div id="app-title">MULTI-VIEW SYNC</div>
+                <input type="text" id="url-input" placeholder="Enter URL to add to grid..." value="https://google.com">
+                <button id="new-tab-btn" style="white-space: nowrap;">+ ADD VIEW</button>
+                <div style="flex: 1;"></div>
+                <button id="db-update-btn"
+                    style="background: #fab005; color: #000; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin-right: 5px; white-space: nowrap;">🗄️
+                    Veritabanı</button>
+                <button id="anti-idle-toggle-btn"
+                    style="background: #69db7c; color: #000; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; white-space: nowrap;">🛡️
+                    Anti-Idle: AÇIK</button>
+            </div>
+        </div>
+
+        <!-- Category URL Section -->
+        <div id="category-section">
+            <div class="category-row">
+                <span class="category-label">Kategoriye Link Aç:</span>
+                <input type="text" id="category-url-input" placeholder="URL yapıştır...">
+                <input type="number" id="bulk-count-input" placeholder="Adet" min="1" max="20" value="5"
+                    style="width: 80px; background: #2c2e33; border: 1px solid #373a40; color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 13px; outline: none; text-align: center;">
+                <div class="category-buttons">
+
+                    <button class="category-open-btn blue" data-category="jojobet">🔵 Aç</button>
+                    <button class="category-bulk-open-btn blue" data-category="jojobet">⚡ Toplu Aç</button>
+                    <button class="category-open-btn red" data-category="matbet">🔴 Aç</button>
+                    <button class="category-bulk-open-btn red" data-category="matbet">⚡ Toplu Aç</button>
+                    <button class="category-open-btn yellow" data-category="holiganbet">🟡 Aç</button>
+                    <button class="category-bulk-open-btn yellow" data-category="holiganbet">⚡ Toplu Aç</button>
+                    <button class="category-open-btn black" data-category="turboslot">⚫ Aç</button>
+                    <button class="category-bulk-open-btn black" data-category="turboslot">⚡ Toplu Aç</button>
+                </div>
+            </div>
+            <div class="category-row" style="margin-top: 8px;">
+                <span class="category-label">Otomatik Giriş:</span>
+                <div class="category-buttons">
+                    <button class="login-btn blue" data-category="jojobet">🔐 Jojobet Giriş</button>
+                    <button class="withdraw-btn blue" data-category="jojobet"
+                        style="border: 2px solid #4c6ef5; color: #4c6ef5; background: transparent; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin-left: 5px;">💸
+                        Çekim</button>
+
+                    <button class="login-btn red" data-category="matbet">🔐 Matbet Giriş</button>
+                    <button class="withdraw-btn red" data-category="matbet"
+                        style="border: 2px solid #fa5252; color: #fa5252; background: transparent; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin-left: 5px;">💸
+                        Çekim</button>
+
+                    <button class="login-btn yellow" data-category="holiganbet">🔐 Holiganbet Giriş</button>
+                    <button class="withdraw-btn yellow" data-category="holiganbet"
+                        style="border: 2px solid #fab005; color: #fab005; background: transparent; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin-left: 5px;">💸
+                        Çekim</button>
+
+                    <button class="login-btn black" data-category="turboslot">🔐 Turboslot Giriş</button>
+                    <button class="withdraw-btn black" data-category="turboslot"
+                        style="border: 2px solid #495057; color: #adb5bd; background: transparent; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; margin-left: 5px;">💸
+                        Çekim</button>
+                </div>
+                <button id="account-settings-btn"
+                    style="background: #69db7c; color: #000; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-left: 10px;">⚙️
+                    Hesap Ayarları</button>
+            </div>
+        </div>
+
+        <div id="sync-area" style="display: flex; gap: 20px; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                <span class="sync-label" style="color: #4c6ef5;">🔵 Jojobet:</span>
+                <input type="text" id="jojobet-kod-input" placeholder="Jojobet kodu yapıştır..."
+                    style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #373a40; background: #2c2e33; color: white; outline: none;">
+                <button id="btn-sync-blue"
+                    style="background: #4c6ef5; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; white-space: nowrap;">AL</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                <span class="sync-label" style="color: #fa5252;">🔴 Matbet:</span>
+                <input type="text" id="matbet-kod-input" placeholder="Matbet kodu yapıştır..."
+                    style="flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #373a40; background: #2c2e33; color: white; outline: none;">
+                <button id="btn-sync-red"
+                    style="background: #fa5252; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 14px; white-space: nowrap;">AL</button>
+            </div>
+        </div>
+        <div id="grid-container">
+            <!-- Grid placeholders will be created here -->
+        </div>
+
+        <!-- Create Page Modal -->
+        <div id="create-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>🌐 Yeni Sayfa Ekle</h2>
+                <p>URL girin ve kategori seçin</p>
+
+                <div class="input-group">
+                    <label>URL</label>
+                    <input type="text" id="create-url-input" class="modal-input" placeholder="https://example.com">
+                </div>
+
+                <div class="input-group">
+                    <label>Kategori</label>
+                    <div class="category-selector">
+                        <div class="category-option blue selected" data-category="jojobet">
+                            <span class="check-icon">✓</span>
+                        </div>
+                        <div class="category-option red" data-category="matbet">
+                            <span class="check-icon">✓</span>
+                        </div>
+                        <div class="category-option yellow" data-category="holiganbet">
+                            <span class="check-icon">✓</span>
+                        </div>
+                        <div class="category-option black" data-category="turboslot">
+                            <span class="check-icon">✓</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="create-cancel" class="modal-btn secondary">İptal</button>
+                    <button id="create-submit" class="modal-btn primary">Oluştur</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit URL Modal -->
+        <div id="edit-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>✏️ URL Düzenle</h2>
+                <p>Yeni URL girin</p>
+
+                <div class="input-group">
+                    <label>Yeni URL</label>
+                    <input type="text" id="edit-url-input" class="modal-input" placeholder="https://example.com">
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="edit-cancel" class="modal-btn secondary">İptal</button>
+                    <button id="edit-submit" class="modal-btn primary">Kaydet</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telegram Login Modal -->
+        <div id="login-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 id="modal-title">Telegram Login</h2>
+                <p id="modal-desc">Please enter your phone number to sign in.</p>
+
+                <div id="phone-stage" class="input-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="phone-input" class="modal-input" placeholder="+905xxxxxxxxx">
+                </div>
+
+                <div id="code-stage" class="input-group hidden">
+                    <label>Verification Code</label>
+                    <input type="text" id="code-input" class="modal-input" placeholder="Enter 5-digit code">
+                </div>
+
+                <div id="password-stage" class="input-group hidden">
+                    <label>2FA Password</label>
+                    <input type="password" id="password-input" class="modal-input" placeholder="Your cloud password">
+                </div>
+
+                <div class="modal-buttons">
+                    <button id="modal-cancel" class="modal-btn secondary">Cancel</button>
+                    <button id="modal-submit" class="modal-btn primary">Continue</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Modal -->
+        <div id="db-modal" class="modal-overlay">
+            <div class="modal-content" style="width: 700px; max-height: 80vh; overflow-y: auto;">
+                <h2>🗄️ Veritabanı Yönetimi</h2>
+                <div id="db-account-list">
+                    <p style="color: #666; text-align: center;">Yükleniyor...</p>
+                </div>
+                <div class="modal-buttons" style="margin-top: 15px;">
+                    <button id="db-modal-close" class="modal-btn secondary" style="width: 100%;">Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Settings Modal -->
+        <div id="account-modal" class="modal-overlay">
+            <div class="modal-content" style="width: 600px; max-height: 80vh; overflow-y: auto;">
+                <h2>⚙️ Hesap Yönetimi</h2>
+
+                <!-- Add Account Form -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h3 style="margin: 0 0 10px 0; color: #8ab4f8; font-size: 14px;">➕ Yeni Hesap Ekle</h3>
+                    <div class="input-group">
+                        <label>Site</label>
+                        <select id="account-site-select" class="modal-input" style="cursor: pointer;">
+                            <option value="jojobet">🔵 Jojobet</option>
+                            <option value="matbet">🔴 Matbet</option>
+                            <option value="holiganbet">🟡 Holiganbet</option>
+                            <option value="turboslot">⚫ Turboslot</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Kullanıcı Adı</label>
+                        <input type="text" id="account-username-input" class="modal-input" placeholder="Kullanıcı adı">
+                    </div>
+                    <div class="input-group">
+                        <label>Şifre</label>
+                        <input type="password" id="account-password-input" class="modal-input" placeholder="Şifre">
+                    </div>
+                    <button id="add-account-btn" class="modal-btn primary" style="width: 100%; margin-top: 10px;">Hesap
+                        Ekle</button>
+                </div>
+
+                <!-- Gmail Settings -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h3 style="margin: 0 0 10px 0; color: #69db7c; font-size: 14px;">📧 Gmail Ayarları (SMS Kodu İçin)
+                    </h3>
+                    <div class="input-group">
+                        <label>Gmail Adresi</label>
+                        <input type="email" id="gmail-email-input" class="modal-input" placeholder="ornek@gmail.com">
+                    </div>
+                    <div class="input-group">
+                        <label>App Password</label>
+                        <input type="password" id="gmail-password-input" class="modal-input"
+                            placeholder="16 haneli app password">
+                    </div>
+                    <button id="save-gmail-btn" class="modal-btn primary"
+                        style="width: 100%; margin-top: 10px; background: #69db7c; color: #000;">Gmail Ayarlarını
+                        Kaydet</button>
+                </div>
+
+                <!-- Site Settings (Withdrawal Accounts) -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h3 style="margin: 0 0 10px 0; color: #fcc419; font-size: 14px;">🌐 Site Çekim Hesapları (Site
+                        Settings)</h3>
+                    <div class="input-group">
+                        <label>Jojobet Çekim Hesabı</label>
+                        <input type="text" id="jojobet-withdraw-acc" class="modal-input"
+                            placeholder="Jojobet Çekim Hesabı Adı">
+                    </div>
+                    <div class="input-group" style="margin-top: 10px;">
+                        <label>Matbet Çekim Hesabı</label>
+                        <input type="text" id="matbet-withdraw-acc" class="modal-input"
+                            placeholder="Matbet Çekim Hesabı Adı">
+                    </div>
+                    <button id="save-site-settings-btn" class="modal-btn primary"
+                        style="width: 100%; margin-top: 10px; background: #fcc419; color: #000;">Site Ayarlarını
+                        Kaydet</button>
+                </div>
+
+                <!-- Account List -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px;">
+                    <h3 style="margin: 0 0 10px 0; color: #fab005; font-size: 14px;">📋 Kayıtlı Hesaplar</h3>
+                    <div id="account-list" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Accounts will be populated here -->
+                        <p style="color: #666; text-align: center;">Yükleniyor...</p>
+                    </div>
+                </div>
+
+                <div class="modal-buttons" style="margin-top: 15px;">
+                    <button id="account-modal-close" class="modal-btn secondary" style="width: 100%;">Kapat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Status Toast -->
+        <div id="login-status-toast"
+            style="position: fixed; bottom: 20px; right: 20px; background: #25262b; color: #fff; padding: 15px 20px; border-radius: 8px; display: none; z-index: 2000; max-width: 300px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+            <div id="login-status-text">Giriş durumu...</div>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+
+</html>
