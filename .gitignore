@@ -6,3 +6,8 @@ dist/
 Thumbs.db
 proxies.txt
 session.json
+sefa.txt
+sefa.txt.pub
+*.db
+db_result.txt
+sorun.txt.txt
