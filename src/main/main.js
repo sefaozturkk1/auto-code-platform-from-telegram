@@ -52,6 +52,11 @@ app.commandLine.appendSwitch('renderer-process-limit', '150');
 app.commandLine.appendSwitch('disable-renderer-backgrounding');
 app.commandLine.appendSwitch('disable-background-timer-throttling');
 app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+
+// Prevent Cache Bloat globally
+app.commandLine.appendSwitch('disk-cache-size', '10485760'); // 10 MB limit for disk cache
+app.commandLine.appendSwitch('media-cache-size', '5242880'); // 5 MB limit for media cache
+
 // app.commandLine.appendSwitch('js-flags', '--max-old-space-size=8192');
 // app.commandLine.appendSwitch('disable-site-isolation-trials');
 // app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors');
@@ -587,7 +592,8 @@ ipcMain.on('toggle-anti-idle', (event, enabled) => {
 
 function createBrowserTab(url, category = 'jojobet', accountId = null) {
     const id = Date.now().toString();
-    let partition = `persist:account_${accountId || id}`;
+    // Use persistent partition only if accountId is provided. Otherwise use an in-memory partition.
+    let partition = accountId ? `persist:account_${accountId}` : `guest_${id}`;
 
     // Legacy mapping for UI compatibility
     const colorCategory = SITE_CATEGORIES[category] || 'blue';
