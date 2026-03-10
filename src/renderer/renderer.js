@@ -72,6 +72,15 @@ antiIdleToggleBtn.onclick = () => {
     antiIdleToggleBtn.style.background = isAntiIdleEnabled ? '#69db7c' : '#fa5252';
 };
 
+// --- Zero Balance Refresh Toggle logic ---
+const zeroBalanceToggle = document.getElementById('zero-balance-toggle');
+if (zeroBalanceToggle) {
+    zeroBalanceToggle.onchange = (e) => {
+        window.electronAPI.toggleZeroBalanceRefresh(e.target.checked);
+    };
+}
+
+
 // --- DB Management Modal Logic ---
 const dbUpdateBtn = document.getElementById('db-update-btn');
 const dbModal = document.getElementById('db-modal');

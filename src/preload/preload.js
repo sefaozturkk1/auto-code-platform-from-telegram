@@ -58,6 +58,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     // NEW: Anti-Idle Control
     toggleAntiIdle: (enabled) => ipcRenderer.send('toggle-anti-idle', enabled),
+    toggleZeroBalanceRefresh: (enabled) => ipcRenderer.send('toggle-zero-balance-refresh', enabled),
 
     // NEW: Grid View manual controls
     reloadView: (viewId) => ipcRenderer.send('reload-view', viewId),

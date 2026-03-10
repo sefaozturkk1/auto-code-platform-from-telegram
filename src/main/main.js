@@ -346,6 +346,7 @@ function createTray() {
 }
 
 let isAntiIdleEnabled = true; // Toggle flag for anti-idle
+let isZeroBalanceRefreshEnabled = true; // Toggle flag for 0.00 balance refresh
 let isSpammingActive = false; // Spam coordination flag - anti-idle navigasyonları spam sırasında atlanır
 
 function startAntiIdle() {
@@ -425,6 +426,24 @@ function startAntiIdle() {
                     bubbles: true, clientX: Math.random() * 100, clientY: Math.random() * 100
                 }));
                 window.dispatchEvent(new Event('focus'));
+                
+                // Cloudflare auto-click
+                (function() {
+                    try {
+                        const cfWidget = document.querySelector('iframe[src*="cloudflare"]');
+                        if (cfWidget) {
+                            // Find the center of the iframe and click it, 
+                            // or if we have access to the inner content, we click the box.
+                            // Turnstile typically allows clicking within the iframe bounds manually, or we can send a click to the iframe rect
+                            const rect = cfWidget.getBoundingClientRect();
+                            const x = rect.left + rect.width / 2;
+                            const y = rect.top + rect.height / 2;
+                            document.dispatchEvent(new MouseEvent('click', {
+                                bubbles: true, cancelable: true, clientX: x, clientY: y
+                            }));
+                        }
+                    } catch(e) {}
+                })();
             `).catch(() => { });
         });
     }, 30 * 1000); // 30 saniye
@@ -456,7 +475,7 @@ function startAntiIdle() {
     // Bakiye 0.00 olan view'ler için /casino -> /bonus-history -> geri dön
     // ============================================
     setInterval(async () => {
-        if (!isAntiIdleEnabled || views.size === 0) return;
+        if (!isAntiIdleEnabled || views.size === 0 || !isZeroBalanceRefreshEnabled) return;
         console.log(`[BALANCE-CHECK] Checking balances on ${views.size} views...`);
 
         const zeroBalanceViews = [];
@@ -612,6 +631,12 @@ ipcMain.on('toggle-anti-idle', (event, enabled) => {
             message: `🛡️ Anti-Idle: ${enabled ? 'AÇIK' : 'KAPALI'}`
         });
     }
+});
+
+// Zero Balance Refresh Toggle IPC Handler
+ipcMain.on('toggle-zero-balance-refresh', (event, enabled) => {
+    isZeroBalanceRefreshEnabled = enabled;
+    console.log(`[ZERO-BALANCE] Toggle: ${enabled ? 'ENABLED' : 'DISABLED'}`);
 });
 
 function createBrowserTab(url, category = 'jojobet', accountId = null) {
