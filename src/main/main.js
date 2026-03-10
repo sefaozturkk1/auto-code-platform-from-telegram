@@ -101,22 +101,42 @@ function getNextUserAgent() {
 let mobileProxyConfig = null; // { host, port, username, password, changeIpUrl, batchSize }
 
 function getMobileProxyConfigPath() {
-    return path.join(app.getPath('userData'), 'mobile_proxy.json');
+    // proxy.txt dosyasını projenin ana klasöründen çekecek şekilde ayarladık
+    return path.join(app.getAppPath(), 'proxy.txt');
 }
 
 function loadMobileProxyConfig() {
     try {
         const configPath = getMobileProxyConfigPath();
         if (fs.existsSync(configPath)) {
-            const raw = fs.readFileSync(configPath, 'utf8');
-            mobileProxyConfig = JSON.parse(raw);
-            console.log(`[MOBILE-PROXY] Config loaded: ${mobileProxyConfig.host}:${mobileProxyConfig.port} (batch: ${mobileProxyConfig.batchSize || 5})`);
+            const raw = fs.readFileSync(configPath, 'utf8').trim();
+
+            // format (host:port:user:pass değişim-linki) parse et
+            const parts = raw.split(/\s+/);
+            if (parts.length > 0 && parts[0].includes(':')) {
+                const proxyInfo = parts[0].split(':');
+                let ipUrl = parts.slice(1).join(' ').trim();
+
+                mobileProxyConfig = {
+                    host: proxyInfo[0],
+                    port: parseInt(proxyInfo[1], 10),
+                    username: proxyInfo[2] || '',
+                    password: proxyInfo[3] || '',
+                    changeIpUrl: ipUrl,
+                    batchSize: 5
+                };
+                console.log(`[MOBILE-PROXY] Config loaded from proxy.txt: ${mobileProxyConfig.host}:${mobileProxyConfig.port}`);
+            } else {
+                // Eski json fallback ihtimali
+                mobileProxyConfig = JSON.parse(raw);
+                console.log(`[MOBILE-PROXY] Config loaded (json fallback): ${mobileProxyConfig.host}:${mobileProxyConfig.port}`);
+            }
         } else {
-            console.log('[MOBILE-PROXY] No config file found. Mobile proxy disabled.');
+            console.log('[MOBILE-PROXY] No proxy.txt file found. Mobile proxy disabled.');
             mobileProxyConfig = null;
         }
     } catch (err) {
-        console.error('[MOBILE-PROXY] Error loading config:', err);
+        console.error('[MOBILE-PROXY] Error loading proxy config from txt:', err.message);
         mobileProxyConfig = null;
     }
 }
@@ -124,9 +144,11 @@ function loadMobileProxyConfig() {
 function saveMobileProxyConfig(config) {
     try {
         const configPath = getMobileProxyConfigPath();
-        fs.writeFileSync(configPath, JSON.stringify(config, null, 2), 'utf8');
+        // Arayüzden kaydederse txt olarak da aynı formatı yazdır
+        const txtFormat = `${config.host}:${config.port}${config.username ? ':' + config.username : ''}${config.password ? ':' + config.password : ''} ${config.changeIpUrl || ''}`;
+        fs.writeFileSync(configPath, txtFormat.trim(), 'utf8');
         mobileProxyConfig = config;
-        console.log('[MOBILE-PROXY] Config saved successfully.');
+        console.log('[MOBILE-PROXY] Config proxy.txt formatinda txt dosyasina saved successfully.');
         return true;
     } catch (err) {
         console.error('[MOBILE-PROXY] Error saving config:', err);
