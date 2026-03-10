@@ -418,34 +418,68 @@ function startAntiIdle() {
     // ============================================
     // COMPONENT 1b: Hafif Aktivite (30 sn aralık)
     // ============================================
-    setInterval(() => {
+    setInterval(async () => {
         if (!isAntiIdleEnabled || views.size === 0) return;
-        views.forEach((viewData) => {
-            viewData.view.webContents.executeJavaScript(`
-                document.dispatchEvent(new MouseEvent('mousemove', {
-                    bubbles: true, clientX: Math.random() * 100, clientY: Math.random() * 100
-                }));
-                window.dispatchEvent(new Event('focus'));
-                
-                // Cloudflare auto-click
-                (function() {
-                    try {
-                        const cfWidget = document.querySelector('iframe[src*="cloudflare"]');
-                        if (cfWidget) {
-                            // Find the center of the iframe and click it, 
-                            // or if we have access to the inner content, we click the box.
-                            // Turnstile typically allows clicking within the iframe bounds manually, or we can send a click to the iframe rect
-                            const rect = cfWidget.getBoundingClientRect();
-                            const x = rect.left + rect.width / 2;
-                            const y = rect.top + rect.height / 2;
-                            document.dispatchEvent(new MouseEvent('click', {
-                                bubbles: true, cancelable: true, clientX: x, clientY: y
-                            }));
-                        }
-                    } catch(e) {}
-                })();
-            `).catch(() => { });
-        });
+
+        for (const [viewId, viewData] of views) {
+            try {
+                // Hafif Aktivite
+                await viewData.view.webContents.executeJavaScript(`
+                    document.dispatchEvent(new MouseEvent('mousemove', {
+                        bubbles: true, clientX: Math.random() * 100, clientY: Math.random() * 100
+                    }));
+                    window.dispatchEvent(new Event('focus'));
+                `);
+
+                // Cloudflare widget koordinatlarını bul (DOM yerine Native Click için)
+                const cfCoords = await viewData.view.webContents.executeJavaScript(`
+                    (function() {
+                        try {
+                            const iframes = document.querySelectorAll('iframe');
+                            for (let i = 0; i < iframes.length; i++) {
+                                if (iframes[i].src.includes('cloudflare') || iframes[i].src.includes('turnstile')) {
+                                    const rect = iframes[i].getBoundingClientRect();
+                                    // Sadece görünürse koordinat dön
+                                    if (rect.width > 0 && rect.height > 0) {
+                                        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+                                    }
+                                }
+                            }
+                            // Eski usül class kontrolü
+                            const cfBox = document.querySelector('.cf-turnstile') || document.querySelector('#cf-turnstile');
+                            if (cfBox) {
+                                const rect = cfBox.getBoundingClientRect();
+                                if (rect.width > 0 && rect.height > 0) {
+                                    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+                                }
+                            }
+                        } catch(e) {}
+                        return null;
+                    })();
+                `);
+
+                // Eğer ekranda Cloudflare kutusu bulunursa, Main Process üzerinden "Native (Gerçek)" tıklama yolla
+                // DOM Click eventleri sahte olduğu için Cloudflare bunu yemiyor, sendInputEvent OS düzeyindendir
+                if (cfCoords && typeof cfCoords.x === 'number' && typeof cfCoords.y === 'number') {
+                    console.log(`[CLOUDFLARE] View ${viewId} - Sending native click to ${cfCoords.x}, ${cfCoords.y}`);
+
+                    const x = Math.round(cfCoords.x);
+                    const y = Math.round(cfCoords.y);
+
+                    // Mouse aşağı bas
+                    viewData.view.webContents.sendInputEvent({ type: 'mouseDown', x: x, y: y, button: 'left', clickCount: 1 });
+
+                    // 100 milisaniye (insansı bekleme) sonra butonu bırak
+                    setTimeout(() => {
+                        try {
+                            viewData.view.webContents.sendInputEvent({ type: 'mouseUp', x: x, y: y, button: 'left', clickCount: 1 });
+                        } catch (e) { }
+                    }, 100);
+                }
+            } catch (err) {
+                // View kapatılmış olabilir, hatayı yut
+            }
+        }
     }, 30 * 1000); // 30 saniye
 
     // ============================================
@@ -454,19 +488,19 @@ function startAntiIdle() {
     // ============================================
     setInterval(() => {
         if (!isAntiIdleEnabled || views.size === 0) return;
-        console.log(`[ANTI-IDLE] Session refresh...`);
+        console.log(`[ANTI - IDLE] Session refresh...`);
         views.forEach((viewData) => {
             viewData.view.webContents.executeJavaScript(`
-                (function() {
-                    if (typeof window.onbeforeunload === 'function') {}
-                    document.cookie;
-                    try {
-                        localStorage.getItem('__antiIdlePing');
-                        localStorage.setItem('__antiIdlePing', Date.now().toString());
-                    } catch(e) {}
-                    console.log('[ANTI-IDLE] Session refresh at ' + new Date().toLocaleTimeString());
-                })();
-            `).catch(() => { });
+                        (function () {
+                            if (typeof window.onbeforeunload === 'function') { }
+                            document.cookie;
+                            try {
+                                localStorage.getItem('__antiIdlePing');
+                                localStorage.setItem('__antiIdlePing', Date.now().toString());
+                            } catch (e) { }
+                            console.log('[ANTI-IDLE] Session refresh at ' + new Date().toLocaleTimeString());
+                        })();
+                    `).catch(() => { });
         });
     }, 2 * 60 * 1000); // 2 dakika
 
@@ -476,7 +510,7 @@ function startAntiIdle() {
     // ============================================
     setInterval(async () => {
         if (!isAntiIdleEnabled || views.size === 0 || !isZeroBalanceRefreshEnabled) return;
-        console.log(`[BALANCE-CHECK] Checking balances on ${views.size} views...`);
+        console.log(`[BALANCE - CHECK] Checking balances on ${views.size} views...`);
 
         const zeroBalanceViews = [];
 
@@ -485,31 +519,31 @@ function startAntiIdle() {
 
             try {
                 const balance = await viewData.view.webContents.executeJavaScript(`
-                    (function() {
-                        try {
-                            var allAmounts = document.querySelectorAll('span.FormattedAmount');
-                            if (allAmounts.length === 0) return null;
-                            var txt = (allAmounts[0].innerText || allAmounts[0].textContent || '').trim();
-                            if (!txt) return null;
-                            // Parse Turkish number format: dots=thousands, comma=decimal
-                            var clean = '';
-                            for (var i = 0; i < txt.length; i++) {
-                                var ch = txt.charCodeAt(i);
-                                if ((ch >= 48 && ch <= 57) || ch === 46 || ch === 44) clean += txt[i];
-                            }
-                            if (!clean) return null;
-                            clean = clean.split('.').join('');
-                            clean = clean.replace(',', '.');
-                            return parseFloat(clean);
-                        } catch(e) { return null; }
-                    })();
-                `);
+        (function () {
+            try {
+                var allAmounts = document.querySelectorAll('span.FormattedAmount');
+                if (allAmounts.length === 0) return null;
+                var txt = (allAmounts[0].innerText || allAmounts[0].textContent || '').trim();
+                if (!txt) return null;
+                // Parse Turkish number format: dots=thousands, comma=decimal
+                var clean = '';
+                for (var i = 0; i < txt.length; i++) {
+                    var ch = txt.charCodeAt(i);
+                    if ((ch >= 48 && ch <= 57) || ch === 46 || ch === 44) clean += txt[i];
+                }
+                if (!clean) return null;
+                clean = clean.split('.').join('');
+                clean = clean.replace(',', '.');
+                return parseFloat(clean);
+            } catch (e) { return null; }
+        })();
+    `);
 
                 if (balance !== null && balance === 0) {
-                    console.log(`[BALANCE-CHECK] View ${viewId}: Balance is 0.00!`);
+                    console.log(`[BALANCE - CHECK] View ${viewId}: Balance is 0.00!`);
                     zeroBalanceViews.push({ viewId, viewData });
                 } else if (balance !== null) {
-                    console.log(`[BALANCE-CHECK] View ${viewId}: Balance = ${balance}`);
+                    console.log(`[BALANCE - CHECK] View ${viewId}: Balance = ${balance} `);
                 }
             } catch (err) {
                 // View might be destroyed or not ready
@@ -524,27 +558,27 @@ function startAntiIdle() {
 
                 // 1. /casino path'ine git
                 urlObj.pathname = '/casino';
-                console.log(`[BALANCE-CHECK] View ${viewId}: Navigating to ${urlObj.toString()}`);
+                console.log(`[BALANCE - CHECK] View ${viewId}: Navigating to ${urlObj.toString()} `);
                 viewData.view.webContents.loadURL(urlObj.toString());
                 await new Promise(r => setTimeout(r, 2000)); // 2 sn bekle
 
                 // 2. /bonus-history path'ine git
                 urlObj.pathname = '/bonus-history';
-                console.log(`[BALANCE-CHECK] View ${viewId}: Navigating to ${urlObj.toString()}`);
+                console.log(`[BALANCE - CHECK] View ${viewId}: Navigating to ${urlObj.toString()} `);
                 viewData.view.webContents.loadURL(urlObj.toString());
                 await new Promise(r => setTimeout(r, 1000)); // 1 sn bekle
 
                 // 3. Orijinal URL'e geri dön
-                console.log(`[BALANCE-CHECK] View ${viewId}: Returning to ${currentUrl}`);
+                console.log(`[BALANCE - CHECK] View ${viewId}: Returning to ${currentUrl} `);
                 viewData.view.webContents.loadURL(currentUrl);
 
             } catch (err) {
-                console.log(`[BALANCE-CHECK] Error for view ${viewId}:`, err.message);
+                console.log(`[BALANCE - CHECK] Error for view ${viewId}: `, err.message);
             }
         }
 
         if (zeroBalanceViews.length > 0) {
-            console.log(`[BALANCE-CHECK] Processed ${zeroBalanceViews.length} zero-balance views.`);
+            console.log(`[BALANCE - CHECK] Processed ${zeroBalanceViews.length} zero - balance views.`);
         }
     }, 2 * 60 * 1000); // 2 dakika
 
@@ -556,19 +590,19 @@ function startAntiIdle() {
     setInterval(async () => {
         if (!isAntiIdleEnabled || views.size === 0) return;
         if (isSpammingActive) {
-            console.log(`[ANTI-IDLE-NAV] Spam active, skipping casino navigation.`);
+            console.log(`[ANTI - IDLE - NAV] Spam active, skipping casino navigation.`);
             return;
         }
-        console.log(`[ANTI-IDLE-NAV] Starting staggered casino navigation on ${views.size} views...`);
+        console.log(`[ANTI - IDLE - NAV] Starting staggered casino navigation on ${views.size} views...`);
 
         for (const [viewId, viewData] of views) {
             // Her iterasyonda tekrar kontrol et (spam başlamış olabilir)
             if (!isAntiIdleEnabled || isSpammingActive) {
-                console.log(`[ANTI-IDLE-NAV] Aborting: ${isSpammingActive ? 'spam started' : 'anti-idle disabled'}`);
+                console.log(`[ANTI - IDLE - NAV] Aborting: ${isSpammingActive ? 'spam started' : 'anti-idle disabled'} `);
                 break;
             }
             if (viewsInAutoLogin.has(viewId)) {
-                console.log(`[ANTI-IDLE-NAV] Skipping view ${viewId} (Auto-Login in progress)`);
+                console.log(`[ANTI - IDLE - NAV] Skipping view ${viewId} (Auto - Login in progress)`);
                 continue;
             }
 
@@ -579,47 +613,47 @@ function startAntiIdle() {
                 urlObj.pathname = '/casino';
                 const casinoUrl = urlObj.toString();
 
-                console.log(`[ANTI-IDLE-NAV] View ${viewId}: Navigating to ${casinoUrl}`);
+                console.log(`[ANTI - IDLE - NAV] View ${viewId}: Navigating to ${casinoUrl} `);
                 viewData.view.webContents.loadURL(casinoUrl);
 
                 // 5 sn sonra /active-bonuses sayfasına git
                 await new Promise(r => setTimeout(r, 5000));
                 urlObj.pathname = '/active-bonuses';
                 const activeBonusesUrl = urlObj.toString();
-                console.log(`[ANTI-IDLE-NAV] View ${viewId}: Navigating to ${activeBonusesUrl}`);
+                console.log(`[ANTI - IDLE - NAV] View ${viewId}: Navigating to ${activeBonusesUrl} `);
                 viewData.view.webContents.loadURL(activeBonusesUrl);
 
                 // Sonraki view'e geçmeden önce 10-20 sn rastgele bekle
                 const randomDelay = Math.floor(Math.random() * 11000) + 10000; // 10000-20000ms
-                console.log(`[ANTI-IDLE-NAV] Waiting ${Math.round(randomDelay / 1000)}s before next view...`);
+                console.log(`[ANTI - IDLE - NAV] Waiting ${Math.round(randomDelay / 1000)}s before next view...`);
                 await new Promise(r => setTimeout(r, randomDelay));
 
             } catch (err) {
-                console.log(`[ANTI-IDLE-NAV] Error for view ${viewId}:`, err.message);
+                console.log(`[ANTI - IDLE - NAV] Error for view ${viewId}: `, err.message);
             }
         }
 
-        console.log(`[ANTI-IDLE-NAV] Staggered navigation complete.`);
+        console.log(`[ANTI - IDLE - NAV] Staggered navigation complete.`);
     }, 45 * 60 * 1000); // 45 dakika
 }
 
 function executeImmediateAntiIdle() {
     if (!isAntiIdleEnabled || views.size === 0) return;
-    console.log(`[ANTI-IDLE] Immediate keep-alive triggered by toggle...`);
+    console.log(`[ANTI - IDLE] Immediate keep - alive triggered by toggle...`);
 
     views.forEach((viewData, viewId) => {
         if (viewsInAutoLogin.has(viewId)) return;
         viewData.view.webContents.executeJavaScript(`
-            document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: Math.random() * 100, clientY: Math.random() * 100 }));
-            window.dispatchEvent(new Event('focus'));
-        `).catch(() => { });
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: Math.random() * 100, clientY: Math.random() * 100 }));
+    window.dispatchEvent(new Event('focus'));
+    `).catch(() => { });
     });
 }
 
 // Anti-Idle Toggle IPC Handler
 ipcMain.on('toggle-anti-idle', (event, enabled) => {
     isAntiIdleEnabled = enabled;
-    console.log(`[ANTI-IDLE] Toggle: ${enabled ? 'ENABLED' : 'DISABLED'}`);
+    console.log(`[ANTI - IDLE] Toggle: ${enabled ? 'ENABLED' : 'DISABLED'} `);
 
     if (enabled) {
         executeImmediateAntiIdle();
@@ -628,7 +662,7 @@ ipcMain.on('toggle-anti-idle', (event, enabled) => {
     if (mainWindow) {
         mainWindow.webContents.send('auto-login-status', {
             status: 'step',
-            message: `🛡️ Anti-Idle: ${enabled ? 'AÇIK' : 'KAPALI'}`
+            message: `🛡️ Anti - Idle: ${enabled ? 'AÇIK' : 'KAPALI'} `
         });
     }
 });
@@ -636,13 +670,13 @@ ipcMain.on('toggle-anti-idle', (event, enabled) => {
 // Zero Balance Refresh Toggle IPC Handler
 ipcMain.on('toggle-zero-balance-refresh', (event, enabled) => {
     isZeroBalanceRefreshEnabled = enabled;
-    console.log(`[ZERO-BALANCE] Toggle: ${enabled ? 'ENABLED' : 'DISABLED'}`);
+    console.log(`[ZERO - BALANCE] Toggle: ${enabled ? 'ENABLED' : 'DISABLED'} `);
 });
 
 function createBrowserTab(url, category = 'jojobet', accountId = null) {
     const id = Date.now().toString();
     // Use persistent partition only if accountId is provided. Otherwise use an in-memory partition.
-    let partition = accountId ? `persist:account_${accountId}` : `guest_${id}`;
+    let partition = accountId ? `persist:account_${accountId} ` : `guest_${id} `;
 
     // Legacy mapping for UI compatibility
     const colorCategory = SITE_CATEGORIES[category] || 'blue';
@@ -662,10 +696,10 @@ function createBrowserTab(url, category = 'jojobet', accountId = null) {
     // Hide webdriver property for stealth
     view.webContents.on('dom-ready', async () => {
         await view.webContents.executeJavaScript(`
-            Object.defineProperty(navigator, 'webdriver', {
-                get: () => undefined
-            });
-        `).catch(() => { });
+    Object.defineProperty(navigator, 'webdriver', {
+        get: () => undefined
+    });
+    `).catch(() => { });
     });
 
     // Store view data
@@ -739,19 +773,19 @@ app.whenReady().then(() => {
             for (const [viewId, viewData] of views) {
                 try {
                     const hasBonus = await viewData.view.webContents.executeJavaScript(`
-                        (function() {
-                            const bonusElement = document.querySelector('ul.BonusDetailsInfo');
-                            return bonusElement !== null;
-                        })();
-                    `);
+        (function () {
+            const bonusElement = document.querySelector('ul.BonusDetailsInfo');
+            return bonusElement !== null;
+        })();
+    `);
 
                     if (hasBonus) {
                         const accountId = viewAccountMap.get(viewId);
                         if (accountId) {
-                            console.log(`[BONUS-SCANNER] ⚠️ Bonus detected for account ${accountId}! Setting flag...`);
+                            console.log(`[BONUS - SCANNER] ⚠️ Bonus detected for account ${accountId}! Setting flag...`);
                             if (db && db.setBonusFlag) {
                                 db.setBonusFlag(accountId);
-                                console.log(`[BONUS-SCANNER] ✅ Account ${accountId} flagged successfully`);
+                                console.log(`[BONUS - SCANNER] ✅ Account ${accountId} flagged successfully`);
 
                                 // TELEGRAM NOTIFICATION
                                 try {
@@ -761,11 +795,11 @@ app.whenReady().then(() => {
                                         // Ideally we should cache accounts or add getAccountById but this is fine for infrequent scanner
                                         const allAccounts = db.getAllAccounts();
                                         const account = allAccounts.find(a => a.id === accountId);
-                                        const username = account ? account.username : `ID: ${accountId}`;
+                                        const username = account ? account.username : `ID: ${accountId} `;
 
                                         const telegramChatId = '5271912466';
-                                        const bonusMsg = `⚠️ **Bonus/Çevrim Tespit Edildi (Otomatik Tarama)**\n\n` +
-                                            `👤 Kullanıcı: ${username}\n` +
+                                        const bonusMsg = `⚠️ ** Bonus / Çevrim Tespit Edildi(Otomatik Tarama) **\n\n` +
+                                            `👤 Kullanıcı: ${username} \n` +
                                             `🚫 Durum: Bonus flagged olarak işaretlendi.\n` +
                                             `🔍 Kaynak: .BonusDetailsInfo elementi tespit edildi.`;
 
@@ -781,7 +815,7 @@ app.whenReady().then(() => {
                 } catch (error) {
                     // Silently skip views that are closed or not ready
                     if (!error.message.includes('destroyed')) {
-                        console.log(`[BONUS-SCANNER] Error scanning view ${viewId}:`, error.message);
+                        console.log(`[BONUS - SCANNER] Error scanning view ${viewId}: `, error.message);
                     }
                 }
             }
@@ -799,7 +833,7 @@ app.whenReady().then(() => {
             cutoff.setDate(cutoff.getDate() - 1);
         }
 
-        console.log(`[BONUS-RESET] Startup cleanup: Clearing flags older than ${cutoff.toLocaleString()}`);
+        console.log(`[BONUS - RESET] Startup cleanup: Clearing flags older than ${cutoff.toLocaleString()} `);
         if (db && db.clearOldBonusFlags) {
             db.clearOldBonusFlags(cutoff.getTime());
         }
@@ -818,13 +852,13 @@ app.whenReady().then(() => {
         const msUntil3AM = next3AM - now;
         const hoursUntil = Math.floor(msUntil3AM / (1000 * 60 * 60));
 
-        console.log(`[BONUS-RESET] Next active reset scheduled in ${hoursUntil} hours at 03:00`);
+        console.log(`[BONUS - RESET] Next active reset scheduled in ${hoursUntil} hours at 03:00`);
 
         setTimeout(() => {
             console.log('[BONUS-RESET] 🔄 Resetting all bonus flags at 03:00...');
             if (db && db.clearAllBonusFlags) {
                 const cleared = db.clearAllBonusFlags();
-                console.log(`[BONUS-RESET] ✅ Reset complete! ${cleared} accounts cleared.`);
+                console.log(`[BONUS - RESET] ✅ Reset complete! ${cleared} accounts cleared.`);
             }
             scheduleDailyReset(); // Schedule next reset for tomorrow
         }, msUntil3AM);
@@ -847,14 +881,14 @@ app.whenReady().then(() => {
         if (authInfo.isProxy) {
             // Check Mobile Proxy
             if (mobileProxyConfig && mobileProxyConfig.username && mobileProxyConfig.password && authInfo.host === mobileProxyConfig.host) {
-                console.log(`[MOBILE-PROXY AUTH] Authenticating proxy ${authInfo.host}:${authInfo.port}`);
+                console.log(`[MOBILE - PROXY AUTH] Authenticating proxy ${authInfo.host}:${authInfo.port} `);
                 event.preventDefault();
                 callback(mobileProxyConfig.username, mobileProxyConfig.password);
                 return;
             }
             // Check General Proxy
             if (generalProxyConfig && generalProxyConfig.username && generalProxyConfig.password && authInfo.host === generalProxyConfig.host) {
-                console.log(`[GENERAL-PROXY AUTH] Authenticating proxy ${authInfo.host}:${authInfo.port}`);
+                console.log(`[GENERAL - PROXY AUTH] Authenticating proxy ${authInfo.host}:${authInfo.port} `);
                 event.preventDefault();
                 callback(generalProxyConfig.username, generalProxyConfig.password);
                 return;
@@ -870,7 +904,7 @@ app.on('window-all-closed', () => {
 
 // Handle SSL certificate errors
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
-    console.log(`Certificate error for ${url}: ${error}`);
+    console.log(`Certificate error for ${url}: ${error} `);
     // If you want to automatically ignore these errors (use with caution):
     // event.preventDefault();
     // callback(true);
@@ -902,19 +936,19 @@ ipcMain.on('update-view-bounds', (event, boundsList) => {
 });
 
 ipcMain.on('sync-value', (event, { value, category }) => {
-    console.log(`[SYNC-VALUE] Received value for category: "${category}"`);
+    console.log(`[SYNC - VALUE] Received value for category: "${category}"`);
     views.forEach((viewData, viewId) => {
-        console.log(`[SYNC-VALUE] View ${viewId}: category="${viewData.category}" colorCategory="${viewData.colorCategory}" | match=${viewData.category === category}`);
+        console.log(`[SYNC - VALUE] View ${viewId}: category = "${viewData.category}" colorCategory = "${viewData.colorCategory}" | match=${viewData.category === category} `);
         // If category is specified, only sync to views with matching category
         if (category && viewData.category !== category) {
             return;
         }
 
         const script = `
-            (function() {
-                const inputs = document.querySelectorAll('input[type="text"], input:not([type]), textarea');
-                inputs.forEach(input => {
-                    input.value = \`${value.replace(/`/g, '\\`')}\`;
+        (function () {
+            const inputs = document.querySelectorAll('input[type="text"], input:not([type]), textarea');
+            inputs.forEach(input => {
+                input.value = \`${value.replace(/`/g, '\\`')}\`;
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                     input.dispatchEvent(new Event('change', { bubbles: true }));
                 });
