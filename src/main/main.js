@@ -541,10 +541,12 @@ function startAntiIdle() {
                 console.log(`[ANTI-IDLE-NAV] View ${viewId}: Navigating to ${casinoUrl}`);
                 viewData.view.webContents.loadURL(casinoUrl);
 
-                // 5 sn sonra orijinal URL'e geri dön
+                // 5 sn sonra /active-bonuses sayfasına git
                 await new Promise(r => setTimeout(r, 5000));
-                console.log(`[ANTI-IDLE-NAV] View ${viewId}: Returning to ${currentUrl}`);
-                viewData.view.webContents.loadURL(currentUrl);
+                urlObj.pathname = '/active-bonuses';
+                const activeBonusesUrl = urlObj.toString();
+                console.log(`[ANTI-IDLE-NAV] View ${viewId}: Navigating to ${activeBonusesUrl}`);
+                viewData.view.webContents.loadURL(activeBonusesUrl);
 
                 // Sonraki view'e geçmeden önce 10-20 sn rastgele bekle
                 const randomDelay = Math.floor(Math.random() * 11000) + 10000; // 10000-20000ms

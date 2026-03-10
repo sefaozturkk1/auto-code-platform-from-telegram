@@ -847,6 +847,68 @@ function initAccountManagement() {
         };
     }
 
+    // Bulk Add Accounts
+    const addBulkAccountBtn = document.getElementById('add-bulk-account-btn');
+    const bulkAccountSiteSelect = document.getElementById('bulk-account-site-select');
+    const bulkAccountInput = document.getElementById('bulk-account-input');
+
+    if (addBulkAccountBtn && bulkAccountSiteSelect && bulkAccountInput) {
+        addBulkAccountBtn.onclick = async () => {
+            const site = bulkAccountSiteSelect.value;
+            const text = bulkAccountInput.value.trim();
+
+            if (!text) {
+                alert('Lütfen hesap listesini girin!');
+                return;
+            }
+
+            const originalText = addBulkAccountBtn.innerText;
+            addBulkAccountBtn.innerText = 'Ekleniyor...';
+            addBulkAccountBtn.disabled = true;
+
+            const lines = text.split('\n');
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
+
+                // Allow splitting by colon, semicolon or comma
+                let separator = ':';
+                if (!line.includes(':') && line.includes(',')) separator = ',';
+                if (!line.includes(':') && !line.includes(',') && line.includes(';')) separator = ';';
+
+                const parts = line.split(separator);
+                if (parts.length >= 2) {
+                    const username = parts[0].trim();
+                    const password = parts.slice(1).join(separator).trim();
+                    if (username && password) {
+                        const result = await window.electronAPI.addAccount(site, username, password);
+                        if (result.success) {
+                            successCount++;
+                        } else {
+                            errorCount++;
+                            console.error(`Error adding account ${username}:`, result.error);
+                        }
+                    }
+                }
+            }
+
+            if (successCount > 0) {
+                bulkAccountInput.value = '';
+                loadAccounts();
+                showToast(`${successCount} hesap eklendi!${errorCount > 0 ? ` (${errorCount} hata)` : ''}`, '#69db7c');
+            } else if (errorCount > 0) {
+                alert(`${errorCount} hesap eklenirken hata oluştu.`);
+            } else {
+                alert('Geçerli formatta hesap bulunamadı (kullaniciadi:sifre)');
+            }
+
+            addBulkAccountBtn.innerText = originalText;
+            addBulkAccountBtn.disabled = false;
+        };
+    }
+
     // Save Gmail Config
     if (saveGmailBtn) {
         saveGmailBtn.onclick = async () => {

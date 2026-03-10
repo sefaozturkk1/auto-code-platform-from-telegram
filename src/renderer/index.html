@@ -858,6 +858,27 @@
                         Ekle</button>
                 </div>
 
+                <!-- Bulk Add Accounts Form -->
+                <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <h3 style="margin: 0 0 10px 0; color: #8ab4f8; font-size: 14px;">📝 Toplu Hesap Ekle</h3>
+                    <div class="input-group">
+                        <label>Site</label>
+                        <select id="bulk-account-site-select" class="modal-input" style="cursor: pointer;">
+                            <option value="jojobet">🔵 Jojobet</option>
+                            <option value="matbet">🔴 Matbet</option>
+                            <option value="holiganbet">🟡 Holiganbet</option>
+                            <option value="turboslot">⚫ Turboslot</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Hesaplar (kullaniciadi:sifre formatında alt alta)</label>
+                        <textarea id="bulk-account-input" class="modal-input" placeholder="user1:pass1&#10;user2:pass2"
+                            rows="5" style="resize: vertical;"></textarea>
+                    </div>
+                    <button id="add-bulk-account-btn" class="modal-btn primary"
+                        style="width: 100%; margin-top: 10px;">Toplu Hesap Ekle</button>
+                </div>
+
                 <!-- Gmail Settings -->
                 <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                     <h3 style="margin: 0 0 10px 0; color: #69db7c; font-size: 14px;">📧 Gmail Ayarları (SMS Kodu İçin)
@@ -916,22 +937,28 @@
 
                 <!-- General Proxy Settings -->
                 <div style="background: #1a1b1e; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                    <h3 style="margin: 0 0 10px 0; color: #4dabf7; font-size: 14px;">🌐 Genel Proxy Ayarları (Sabit Proxy)</h3>
-                    <p style="font-size: 12px; color: #a6a7ab; margin-bottom: 10px;">Mobil proxy işlemi bittikten sonra tüm sistem bu proxy üzerinden çalışır.</p>
+                    <h3 style="margin: 0 0 10px 0; color: #4dabf7; font-size: 14px;">🌐 Genel Proxy Ayarları (Sabit
+                        Proxy)</h3>
+                    <p style="font-size: 12px; color: #a6a7ab; margin-bottom: 10px;">Mobil proxy işlemi bittikten sonra
+                        tüm sistem bu proxy üzerinden çalışır.</p>
                     <div class="input-group">
                         <label>Proxy Host:Port</label>
-                        <input type="text" id="general-proxy-host" class="modal-input" placeholder="ör: proxy.example.com:8080">
+                        <input type="text" id="general-proxy-host" class="modal-input"
+                            placeholder="ör: proxy.example.com:8080">
                     </div>
                     <div class="input-group" style="margin-top: 8px;">
                         <label>Proxy Kullanıcı Adı</label>
-                        <input type="text" id="general-proxy-username" class="modal-input" placeholder="Proxy kullanıcı adı (opsiyonel)">
+                        <input type="text" id="general-proxy-username" class="modal-input"
+                            placeholder="Proxy kullanıcı adı (opsiyonel)">
                     </div>
                     <div class="input-group" style="margin-top: 8px;">
                         <label>Proxy Şifre</label>
-                        <input type="password" id="general-proxy-password" class="modal-input" placeholder="Proxy şifre (opsiyonel)">
+                        <input type="password" id="general-proxy-password" class="modal-input"
+                            placeholder="Proxy şifre (opsiyonel)">
                     </div>
                     <div style="display: flex; gap: 8px; margin-top: 10px;">
-                        <button id="save-general-proxy-btn" class="modal-btn primary" style="flex: 1; background: #4dabf7; color: #000;">💾 Genel Proxy Kaydet</button>
+                        <button id="save-general-proxy-btn" class="modal-btn primary"
+                            style="flex: 1; background: #4dabf7; color: #000;">💾 Genel Proxy Kaydet</button>
                     </div>
                 </div>
 
